@@ -1,0 +1,2547 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quest Keeper — 30 Day Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-purple: #1a0933;
+            --royal-purple: #4a2d7c;
+            --mystic-blue: #3d5a80;
+            --gold: #ffd700;
+            --amber: #ffb700;
+            --emerald: #2ecc71;
+            --ruby: #e74c3c;
+            --silver: #bdc3c7;
+            --parchment: #f5f1e8;
+            --ink: #2c3e50;
+            --shadow: rgba(0,0,0,0.35);
+            --fire: #ff6b35;
+            --fire2: #ff9f1c;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #0d0520 0%, #1a0933 40%, #2d1b4e 100%);
+            color: var(--parchment);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background:
+                radial-gradient(circle at 15% 25%, rgba(255,215,0,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 85% 75%, rgba(46,204,113,0.07) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(74,45,124,0.15) 0%, transparent 70%);
+            pointer-events:none; z-index:0;
+        }
+
+        /* ─── MODAL OVERLAY ─── */
+        .modal-overlay {
+            position:fixed; inset:0; background:rgba(0,0,0,0.85);
+            display:flex; align-items:center; justify-content:center;
+            z-index:1000; backdrop-filter:blur(6px);
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-box {
+            background: linear-gradient(135deg, #2d1b4e, #1a0933);
+            border:2px solid var(--gold);
+            border-radius:24px;
+            padding:40px 50px;
+            text-align:center;
+            max-width:420px; width:90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(255,215,0,0.1);
+        }
+        .modal-box .modal-title {
+            font-family:'Cinzel',serif;
+            font-size:2rem; color:var(--gold);
+            margin-bottom:8px;
+        }
+        .modal-box p {
+            color:var(--silver); margin-bottom:25px; font-size:1rem; line-height:1.6;
+        }
+        .modal-box input {
+            width:100%; padding:14px 20px;
+            background:rgba(255,255,255,0.07);
+            border:2px solid rgba(255,215,0,0.4);
+            border-radius:12px;
+            color:var(--parchment);
+            font-family:'Nunito',sans-serif;
+            font-size:1.1rem;
+            text-align:center;
+            outline:none;
+            margin-bottom:20px;
+            transition:border-color 0.3s;
+        }
+        .modal-box input:focus { border-color:var(--gold); }
+        .modal-box input::placeholder { color:rgba(255,255,255,0.3); }
+        .btn-start {
+            width:100%; padding:15px;
+            background:linear-gradient(135deg,var(--amber),var(--gold));
+            color:var(--deep-purple);
+            font-family:'Cinzel',serif;
+            font-size:1.1rem; font-weight:700;
+            border:none; border-radius:12px;
+            cursor:pointer;
+            transition:transform 0.2s, box-shadow 0.2s;
+            box-shadow:0 6px 20px rgba(255,215,0,0.3);
+        }
+        .btn-start:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(255,215,0,0.4); }
+        .btn-start:active { transform:translateY(0); }
+
+        /* ─── ACHIEVEMENT TOAST ─── */
+        .achievement-toast {
+            position:fixed; top:20px; right:20px; z-index:999;
+            background:linear-gradient(135deg, #2d1b4e, #3d5a80);
+            border:2px solid var(--gold);
+            border-radius:16px; padding:16px 22px;
+            display:flex; align-items:center; gap:15px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.5);
+            max-width:340px;
+            animation: slideInRight 0.4s ease, fadeOut 0.5s ease 3.5s forwards;
+        }
+        .toast-icon { font-size:2.2rem; }
+        .toast-title { font-family:'Cinzel',serif; font-size:0.95rem; color:var(--gold); margin-bottom:3px; }
+        .toast-desc { font-size:0.82rem; color:var(--silver); }
+
+        /* ─── DAMAGE FLASH ─── */
+        @keyframes damageFlash {
+            0%,100% { background:inherit; }
+            30% { background:rgba(231,76,60,0.25); }
+        }
+
+        /* ─── MAIN LAYOUT ─── */
+        .container {
+            max-width:900px; margin:0 auto;
+            padding:24px 20px; position:relative; z-index:1;
+        }
+
+        header {
+            text-align:center; margin-bottom:32px;
+            animation:fadeInDown 0.8s ease;
+        }
+        h1 {
+            font-family:'Cinzel',serif;
+            font-size:clamp(2rem,5vw,3.2rem);
+            font-weight:900;
+            background:linear-gradient(135deg,var(--gold),var(--amber),#fff8dc);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            letter-spacing:3px; margin-bottom:6px;
+        }
+        .subtitle {
+            font-family:'Lora',serif;
+            font-size:1rem; color:var(--silver);
+            font-style:italic;
+        }
+
+        /* ─── DAY BANNER ─── */
+        .day-banner {
+            background:linear-gradient(135deg,rgba(255,215,0,0.12),rgba(255,183,0,0.08));
+            border:2px solid rgba(255,215,0,0.4);
+            border-radius:20px; padding:22px 28px;
+            margin-bottom:24px;
+            display:flex; align-items:center; justify-content:space-between;
+            flex-wrap:wrap; gap:16px;
+            animation:fadeIn 1s ease;
+        }
+        .day-left { flex:1; min-width:200px; }
+        .day-counter {
+            font-family:'Cinzel',serif;
+            font-size:1.8rem; color:var(--gold);
+            margin-bottom:4px;
+        }
+        .phase-info { font-size:1rem; color:var(--parchment); margin-bottom:8px; }
+        .phase-description {
+            font-size:0.85rem; color:var(--silver);
+            font-style:italic; line-height:1.5;
+        }
+        .day-right { text-align:center; min-width:120px; }
+        .day-progress-bar {
+            background:rgba(0,0,0,0.3); border-radius:8px;
+            height:12px; overflow:hidden;
+            border:1px solid rgba(255,255,255,0.15);
+            margin-top:10px;
+        }
+        .day-progress-fill {
+            height:100%;
+            background:linear-gradient(90deg,var(--emerald),var(--gold));
+            transition:width 0.6s ease;
+            border-radius:8px;
+        }
+        .phase-badge {
+            display:inline-block; padding:5px 14px;
+            border-radius:20px; font-size:0.8rem; font-weight:700;
+        }
+        .phase-1 { background:rgba(46,204,113,0.25); border:1px solid var(--emerald); color:var(--emerald); }
+        .phase-2 { background:rgba(52,152,219,0.25); border:1px solid #3498db; color:#74b9ff; }
+        .phase-3 { background:rgba(231,76,60,0.25); border:1px solid var(--ruby); color:#ff7675; }
+        .phase-4 { background:rgba(255,215,0,0.25); border:1px solid var(--gold); color:var(--gold); }
+        .day-pct-text {
+            font-family:'Cinzel',serif;
+            font-size:0.8rem; color:var(--silver);
+            margin-top:5px;
+        }
+
+        /* ─── CHARACTER CARD ─── */
+        .character-card {
+            background:linear-gradient(135deg,rgba(74,45,124,0.4),rgba(61,90,128,0.3));
+            backdrop-filter:blur(10px);
+            border:2px solid rgba(255,215,0,0.25);
+            border-radius:20px; padding:26px 28px;
+            margin-bottom:24px;
+            box-shadow:0 10px 40px var(--shadow);
+            animation:fadeIn 1s ease;
+        }
+        .char-top {
+            display:flex; align-items:center;
+            justify-content:space-between;
+            flex-wrap:wrap; gap:16px;
+            margin-bottom:22px;
+        }
+        .char-name-section { display:flex; align-items:center; gap:14px; }
+        .character-name { font-family:'Cinzel',serif; font-size:1.7rem; color:var(--gold); }
+        .level-badge {
+            background:linear-gradient(135deg,var(--amber),var(--gold));
+            color:var(--deep-purple);
+            padding:6px 18px; border-radius:20px;
+            font-weight:700; font-size:1rem;
+            box-shadow:0 4px 12px rgba(255,215,0,0.35);
+        }
+        .char-stats-row {
+            display:grid; grid-template-columns: 1fr 1fr;
+            gap:16px; margin-bottom:0;
+        }
+        .stat-block { }
+        .stat-label {
+            display:flex; justify-content:space-between;
+            margin-bottom:7px; font-weight:600; font-size:0.85rem;
+        }
+        .progress-bar {
+            background:rgba(0,0,0,0.3); border-radius:8px;
+            height:20px; overflow:hidden;
+            border:1px solid rgba(255,255,255,0.15); position:relative;
+        }
+        .progress-fill {
+            height:100%; transition:width 0.5s ease;
+            display:flex; align-items:center; justify-content:center;
+            font-weight:700; font-size:0.78rem; position:relative; overflow:hidden;
+            border-radius:8px;
+        }
+        .progress-fill::after {
+            content:''; position:absolute; top:0; left:-100%; width:60%; height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);
+            animation:shimmer 2.5s infinite;
+        }
+        .hp-fill { background:linear-gradient(90deg,var(--ruby),#ff6b6b); }
+        .xp-fill { background:linear-gradient(90deg,var(--emerald),#55efc4); }
+
+        /* ─── STREAK & GOLD ROW ─── */
+        .bonus-row {
+            display:flex; gap:14px; margin-top:18px; flex-wrap:wrap;
+        }
+        .bonus-card {
+            flex:1; min-width:120px;
+            border-radius:14px; padding:14px 18px; text-align:center;
+            border:1px solid rgba(255,255,255,0.15);
+        }
+        .streak-card {
+            background:linear-gradient(135deg,rgba(255,107,53,0.2),rgba(255,159,28,0.15));
+            border-color:rgba(255,107,53,0.4);
+        }
+        .gold-card {
+            background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,183,0,0.1));
+            border-color:rgba(255,215,0,0.4);
+        }
+        .bonus-value {
+            font-family:'Cinzel',serif; font-size:1.8rem; font-weight:700;
+            line-height:1;
+        }
+        .streak-card .bonus-value { color:var(--fire); text-shadow:0 2px 10px rgba(255,107,53,0.5); }
+        .gold-card .bonus-value { color:var(--gold); text-shadow:0 2px 10px rgba(255,215,0,0.4); }
+        .bonus-label { font-size:0.75rem; color:var(--silver); margin-top:4px; }
+        .streak-best { font-size:0.7rem; color:rgba(255,107,53,0.7); margin-top:2px; }
+
+        /* ─── INFO BOX ─── */
+        .info-box {
+            background:rgba(255,215,0,0.07);
+            border:1px solid rgba(255,215,0,0.2);
+            border-left:4px solid var(--gold);
+            border-radius:12px; padding:16px 20px;
+            margin-bottom:24px;
+            font-size:0.88rem; color:var(--silver); line-height:1.6;
+        }
+        .info-title { font-weight:700; color:var(--gold); margin-bottom:4px; font-size:0.9rem; }
+
+        /* ─── TASK SECTION ─── */
+        .task-section {
+            background:linear-gradient(135deg,rgba(74,45,124,0.25),rgba(61,90,128,0.2));
+            backdrop-filter:blur(8px);
+            border:2px solid rgba(255,255,255,0.08);
+            border-radius:18px; padding:24px;
+            margin-bottom:24px;
+            animation:fadeInUp 0.7s ease;
+        }
+        .section-header {
+            display:flex; align-items:center; justify-content:space-between;
+            margin-bottom:18px; padding-bottom:14px;
+            border-bottom:2px solid rgba(255,255,255,0.12);
+            flex-wrap:wrap; gap:10px;
+        }
+        .section-title {
+            font-family:'Cinzel',serif; font-size:1.2rem;
+            color:var(--gold); display:flex; align-items:center; gap:8px;
+        }
+        .completion-chip {
+            background:rgba(46,204,113,0.2); border:1px solid rgba(46,204,113,0.4);
+            color:var(--emerald); border-radius:20px;
+            padding:4px 14px; font-size:0.82rem; font-weight:700;
+            transition:all 0.3s;
+        }
+        .completion-chip.done {
+            background:rgba(46,204,113,0.35); border-color:var(--emerald);
+            box-shadow:0 0 10px rgba(46,204,113,0.3);
+        }
+
+        .task-list { display:flex; flex-direction:column; gap:10px; }
+        .task-item {
+            background:rgba(0,0,0,0.25);
+            border:1px solid rgba(255,255,255,0.09);
+            border-radius:12px; padding:14px 16px;
+            display:flex; align-items:center; gap:12px;
+            transition:all 0.3s ease; cursor:default;
+        }
+        .task-item:hover {
+            transform:translateX(4px);
+            border-color:rgba(255,215,0,0.35);
+            box-shadow:0 4px 14px rgba(255,215,0,0.12);
+        }
+        .task-item.completed { opacity:0.65; }
+        .task-item.completed .task-name { text-decoration:line-through; color:var(--silver); }
+        .task-checkbox {
+            width:24px; height:24px; border:2px solid var(--gold);
+            border-radius:6px; cursor:pointer; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
+            transition:all 0.25s;
+            background:rgba(255,215,0,0.08);
+        }
+        .task-checkbox:hover { background:rgba(255,215,0,0.2); }
+        .task-checkbox.checked {
+            background:linear-gradient(135deg,var(--gold),var(--amber));
+            border-color:var(--gold);
+        }
+        .task-checkbox.checked::after {
+            content:'✓'; color:var(--deep-purple);
+            font-weight:900; font-size:0.95rem;
+        }
+        .task-content { flex:1; }
+        .task-name { font-size:0.95rem; font-weight:600; margin-bottom:3px; line-height:1.3; }
+        .task-description { font-size:0.8rem; color:var(--silver); font-style:italic; }
+        .task-phase-badge {
+            font-size:0.72rem; font-weight:700; padding:3px 9px;
+            border-radius:10px; flex-shrink:0;
+            background:rgba(255,255,255,0.1);
+            color:var(--silver); border:1px solid rgba(255,255,255,0.15);
+        }
+        .task-phase-badge.phase-1 { background:rgba(46,204,113,0.15); color:var(--emerald); border-color:rgba(46,204,113,0.3); }
+        .task-phase-badge.phase-2 { background:rgba(52,152,219,0.15); color:#74b9ff; border-color:rgba(52,152,219,0.3); }
+        .task-phase-badge.phase-3 { background:rgba(231,76,60,0.15); color:#ff7675; border-color:rgba(231,76,60,0.3); }
+        .task-phase-badge.phase-4 { background:rgba(255,215,0,0.15); color:var(--gold); border-color:rgba(255,215,0,0.3); }
+
+        /* ─── END DAY BUTTON ─── */
+        .end-day-section {
+            margin-top:20px; padding-top:18px;
+            border-top:1px solid rgba(255,255,255,0.1);
+            display:flex; gap:12px; flex-wrap:wrap;
+        }
+        .btn-end-day {
+            flex:1; padding:14px 20px;
+            background:linear-gradient(135deg,var(--amber),var(--gold));
+            color:var(--deep-purple);
+            font-family:'Cinzel',serif; font-size:1rem; font-weight:700;
+            border:none; border-radius:12px; cursor:pointer;
+            transition:all 0.25s;
+            box-shadow:0 6px 20px rgba(255,215,0,0.25);
+            min-width:180px;
+        }
+        .btn-end-day:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(255,215,0,0.35); }
+        .btn-end-day:disabled {
+            background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.3);
+            cursor:not-allowed; transform:none; box-shadow:none;
+            border:1px solid rgba(255,255,255,0.15);
+        }
+        .btn-end-day.finalized {
+            background:linear-gradient(135deg,rgba(46,204,113,0.3),rgba(46,204,113,0.2));
+            color:var(--emerald); border:1px solid rgba(46,204,113,0.4);
+            box-shadow:none; cursor:default; transform:none;
+        }
+        .finalized-note {
+            font-size:0.82rem; color:var(--silver);
+            display:flex; align-items:center; gap:6px;
+            padding:8px 0; flex:1; min-width:150px;
+        }
+
+        /* ─── CALENDAR SECTION ─── */
+        .calendar-section {
+            background:linear-gradient(135deg,rgba(74,45,124,0.2),rgba(61,90,128,0.15));
+            border:2px solid rgba(255,255,255,0.08);
+            border-radius:18px; padding:24px;
+            margin-bottom:24px;
+            animation:fadeInUp 0.9s ease;
+        }
+        .calendar-header {
+            display:flex; align-items:center; justify-content:space-between;
+            margin-bottom:18px;
+        }
+        .calendar-title {
+            font-family:'Cinzel',serif; font-size:1.2rem;
+            color:var(--gold); display:flex; align-items:center; gap:8px;
+        }
+        .calendar-legend {
+            display:flex; gap:12px; flex-wrap:wrap;
+        }
+        .legend-item { display:flex; align-items:center; gap:5px; font-size:0.75rem; color:var(--silver); }
+        .legend-dot { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+
+        .calendar-grid {
+            display:grid;
+            grid-template-columns:repeat(10,1fr);
+            gap:6px;
+        }
+        @media(max-width:600px) {
+            .calendar-grid { grid-template-columns:repeat(6,1fr); }
+        }
+        .cal-day {
+            aspect-ratio:1; border-radius:8px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:0.78rem; font-weight:700;
+            cursor:pointer; transition:all 0.2s;
+            border:2px solid transparent;
+            position:relative; overflow:hidden;
+        }
+        .cal-day:hover { transform:scale(1.12); z-index:2; }
+        .cal-day.future {
+            background:rgba(255,255,255,0.06);
+            color:rgba(255,255,255,0.25);
+            cursor:default;
+        }
+        .cal-day.future:hover { transform:none; }
+        .cal-day.today {
+            background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,183,0,0.15));
+            border-color:var(--gold);
+            color:var(--gold);
+            box-shadow:0 0 14px rgba(255,215,0,0.25);
+            animation:pulse 2s infinite;
+        }
+        .cal-day.perfect {
+            background:linear-gradient(135deg,rgba(46,204,113,0.35),rgba(85,239,196,0.2));
+            border-color:var(--emerald);
+            color:var(--emerald);
+        }
+        .cal-day.partial {
+            background:linear-gradient(135deg,rgba(255,183,0,0.25),rgba(255,215,0,0.15));
+            border-color:var(--amber);
+            color:var(--amber);
+        }
+        .cal-day.missed {
+            background:linear-gradient(135deg,rgba(231,76,60,0.25),rgba(255,107,107,0.15));
+            border-color:var(--ruby);
+            color:#ff7675;
+        }
+        .cal-day.in-progress {
+            background:linear-gradient(135deg,rgba(116,185,255,0.2),rgba(52,152,219,0.15));
+            border-color:#74b9ff;
+            color:#74b9ff;
+        }
+        .cal-day .day-emoji {
+            position:absolute; top:2px; right:3px;
+            font-size:0.55rem; line-height:1;
+        }
+
+        /* ─── ACHIEVEMENTS SECTION ─── */
+        .achievements-section {
+            background:linear-gradient(135deg,rgba(74,45,124,0.2),rgba(61,90,128,0.15));
+            border:2px solid rgba(255,255,255,0.08);
+            border-radius:18px; padding:24px;
+            margin-bottom:24px;
+            animation:fadeInUp 1s ease;
+        }
+        .achievements-title {
+            font-family:'Cinzel',serif; font-size:1.2rem;
+            color:var(--gold); margin-bottom:16px;
+            display:flex; align-items:center; gap:8px;
+        }
+        .achievements-grid {
+            display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+            gap:10px;
+        }
+        .achievement-item {
+            border-radius:12px; padding:14px 10px; text-align:center;
+            border:1px solid rgba(255,255,255,0.1);
+            transition:all 0.3s;
+        }
+        .achievement-item.locked {
+            background:rgba(0,0,0,0.2); filter:grayscale(0.8); opacity:0.45;
+        }
+        .achievement-item.unlocked {
+            background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,183,0,0.08));
+            border-color:rgba(255,215,0,0.35);
+            box-shadow:0 4px 15px rgba(255,215,0,0.1);
+        }
+        .achievement-icon { font-size:2rem; margin-bottom:6px; }
+        .achievement-name { font-size:0.75rem; font-weight:700; color:var(--parchment); margin-bottom:3px; }
+        .achievement-desc { font-size:0.68rem; color:var(--silver); line-height:1.3; }
+
+        /* ─── PARTICLES & FLOATING ─── */
+        .particle {
+            position:fixed; pointer-events:none; z-index:9999;
+            font-family:'Cinzel',serif; font-weight:700; font-size:1.1rem;
+            animation:floatUp 1.8s ease forwards;
+        }
+        .particle.xp { color:var(--emerald); text-shadow:0 0 10px rgba(46,204,113,0.8); }
+        .particle.gold { color:var(--gold); text-shadow:0 0 10px rgba(255,215,0,0.8); }
+        .particle.damage { color:var(--ruby); text-shadow:0 0 10px rgba(231,76,60,0.8); }
+        .particle.bonus { color:#74b9ff; text-shadow:0 0 10px rgba(116,185,255,0.8); }
+
+        /* ─── EMPTY / CELEBRATION ─── */
+        .empty-state {
+            text-align:center; padding:30px;
+            color:var(--silver); font-style:italic;
+        }
+        .celebration-banner {
+            text-align:center; padding:20px;
+            background:linear-gradient(135deg,rgba(46,204,113,0.2),rgba(255,215,0,0.15));
+            border:2px solid var(--emerald); border-radius:14px;
+            font-family:'Cinzel',serif; font-size:1.1rem; color:var(--emerald);
+            animation:pulse 1.5s infinite;
+        }
+
+        .modal-box input.error {
+            border-color: var(--ruby) !important;
+            animation: shake 0.4s ease;
+        }
+        .input-error-msg {
+            font-size: 0.8rem; color: var(--ruby);
+            margin-top: -14px; margin-bottom: 14px;
+            text-align: left; display: none;
+        }
+        .input-error-msg.show { display: block; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20%,60% { transform: translateX(-8px); }
+            40%,80% { transform: translateX(8px); }
+        }
+        .btn-reset-small {
+            background: none; border: none; color: rgba(255,255,255,0.25);
+            font-size: 0.72rem; cursor: pointer; margin-top: 14px;
+            text-decoration: underline; display: block; margin-left: auto; margin-right: auto;
+        }
+        .btn-reset-small:hover { color: var(--ruby); }
+
+
+        .date-modal-box {
+            background:linear-gradient(135deg,#2d1b4e,#1a0933);
+            border:2px solid rgba(255,215,0,0.5);
+            border-radius:24px; padding:36px 40px;
+            text-align:center; max-width:400px; width:90%;
+            box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 40px rgba(255,215,0,0.08);
+        }
+        .date-modal-box .modal-title { font-family:'Cinzel',serif; font-size:1.5rem; color:var(--gold); margin-bottom:8px; }
+        .date-modal-box p { color:var(--silver); font-size:0.88rem; line-height:1.6; margin-bottom:20px; }
+        .date-input-wrap { margin-bottom:10px; }
+        .date-input-wrap label { display:block; font-size:0.82rem; color:var(--silver); margin-bottom:8px; text-align:left; }
+        input[type="date"] {
+            width:100%; padding:13px 16px;
+            background:rgba(255,255,255,0.07);
+            border:2px solid rgba(255,215,0,0.35);
+            border-radius:12px; color:var(--parchment);
+            font-family:'Nunito',sans-serif; font-size:1rem;
+            outline:none; cursor:pointer;
+            color-scheme:dark;
+            transition:border-color 0.2s;
+        }
+        input[type="date"]:focus { border-color:var(--gold); }
+        .date-warning {
+            background:rgba(231,76,60,0.12); border:1px solid rgba(231,76,60,0.3);
+            border-radius:10px; padding:10px 14px;
+            font-size:0.78rem; color:#ff7675; margin-bottom:20px;
+            text-align:left; line-height:1.5; display:none;
+        }
+        .date-warning.show { display:block; }
+        .date-modal-btns { display:flex; gap:10px; }
+        .btn-confirm-date {
+            flex:1; padding:13px;
+            background:linear-gradient(135deg,var(--amber),var(--gold));
+            color:var(--deep-purple); font-family:'Cinzel',serif;
+            font-size:0.95rem; font-weight:700; border:none;
+            border-radius:11px; cursor:pointer; transition:all 0.2s;
+        }
+        .btn-confirm-date:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(255,215,0,0.3); }
+        .btn-cancel-date {
+            padding:13px 18px;
+            background:rgba(255,255,255,0.07); color:var(--silver);
+            border:1px solid rgba(255,255,255,0.15); border-radius:11px;
+            cursor:pointer; font-size:0.9rem; transition:all 0.2s;
+        }
+        .btn-cancel-date:hover { background:rgba(255,255,255,0.12); }
+
+        /* ─── ANTI-CHEAT MODAL ─── */
+        .anticheat-overlay {
+            position:fixed; inset:0; background:rgba(0,0,0,0.88);
+            display:none; align-items:center; justify-content:center;
+            z-index:2000; backdrop-filter:blur(8px);
+            animation: fadeIn 0.25s ease;
+        }
+        .anticheat-overlay.visible { display:flex; }
+        .anticheat-box {
+            background: linear-gradient(145deg, #1e0d3a, #2d1b4e, #1a0933);
+            border: 2px solid rgba(255,107,53,0.6);
+            border-radius: 24px;
+            padding: 36px 40px;
+            max-width: 460px; width: 92%;
+            box-shadow: 0 24px 70px rgba(0,0,0,0.7), 0 0 50px rgba(255,107,53,0.12);
+            position: relative;
+        }
+        .anticheat-icon {
+            font-size: 2.8rem; text-align: center; margin-bottom: 10px;
+        }
+        .anticheat-title {
+            font-family:'Cinzel',serif; font-size:1.5rem;
+            color: var(--fire); text-align:center;
+            margin-bottom: 6px;
+            text-shadow: 0 0 20px rgba(255,107,53,0.4);
+        }
+        .anticheat-subtitle {
+            text-align:center; color:var(--silver);
+            font-size:0.88rem; line-height:1.6;
+            margin-bottom: 20px;
+        }
+        .anticheat-task-label {
+            font-size: 0.8rem; font-weight: 700;
+            color: var(--amber); margin-bottom: 8px;
+            display:flex; align-items:center; gap:6px;
+            background: rgba(255,183,0,0.08);
+            border-left: 3px solid var(--amber);
+            padding: 8px 12px; border-radius: 0 8px 8px 0;
+        }
+        .anticheat-textarea {
+            width: 100%; min-height: 100px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,107,53,0.35);
+            border-radius: 12px; padding: 14px 16px;
+            color: var(--parchment);
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.92rem; line-height: 1.6;
+            resize: vertical; outline: none;
+            transition: border-color 0.3s;
+            margin-bottom: 8px;
+        }
+        .anticheat-textarea:focus { border-color: var(--fire); }
+        .anticheat-textarea::placeholder { color: rgba(255,255,255,0.25); font-style:italic; }
+        .anticheat-word-counter {
+            font-size: 0.78rem; text-align: right;
+            margin-bottom: 16px;
+            transition: color 0.3s;
+        }
+        .anticheat-word-counter.insufficient { color: var(--ruby); }
+        .anticheat-word-counter.sufficient  { color: var(--emerald); }
+        .anticheat-actions { display:flex; gap:10px; }
+        .btn-anticheat-confirm {
+            flex:1; padding: 14px;
+            background: linear-gradient(135deg, #ff6b35, #ff9f1c);
+            color: white; font-family:'Cinzel',serif;
+            font-size: 0.95rem; font-weight: 700;
+            border: none; border-radius: 12px; cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 6px 20px rgba(255,107,53,0.3);
+            opacity: 0.4; pointer-events: none;
+        }
+        .btn-anticheat-confirm.active {
+            opacity: 1; pointer-events: auto;
+        }
+        .btn-anticheat-confirm.active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(255,107,53,0.45);
+        }
+        .btn-anticheat-cancel {
+            padding: 14px 18px;
+            background: rgba(255,255,255,0.07);
+            color: var(--silver); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px; cursor: pointer;
+            font-size: 0.9rem; transition: all 0.2s;
+        }
+        .btn-anticheat-cancel:hover { background: rgba(255,255,255,0.13); }
+        .anticheat-hint {
+            font-size: 0.74rem; color: rgba(255,255,255,0.25);
+            text-align: center; margin-top: 14px; font-style: italic;
+        }
+        /* Shield icon badge on verified tasks */
+        .task-verified-badge {
+            font-size: 0.72rem; color: var(--emerald);
+            margin-left: 4px; vertical-align: middle;
+        }
+
+        /* ─── SETTINGS BUTTON ─── */
+        .btn-settings {
+            background:rgba(255,255,255,0.07);
+            border:1px solid rgba(255,255,255,0.15);
+            border-radius:10px; padding:6px 14px;
+            color:var(--silver); font-size:0.8rem;
+            cursor:pointer; transition:all 0.2s;
+            display:inline-flex; align-items:center; gap:5px;
+            white-space:nowrap;
+        }
+        .btn-settings:hover { background:rgba(255,215,0,0.1); border-color:rgba(255,215,0,0.3); color:var(--gold); }
+
+
+
+        /* ─── SHOP MODAL ─── */
+        .shop-modal-box {
+            background:linear-gradient(145deg,#1e0d3a,#2d1b4e,#1a0933);
+            border:2px solid var(--gold);
+            border-radius:24px; padding:32px 36px;
+            max-width:500px; width:94%;
+            box-shadow:0 24px 70px rgba(0,0,0,0.7), 0 0 50px rgba(255,215,0,0.1);
+            max-height:85vh; overflow-y:auto;
+        }
+        .shop-title {
+            font-family:'Cinzel',serif; font-size:1.6rem; color:var(--gold);
+            text-align:center; margin-bottom:6px;
+        }
+        .shop-gold-display {
+            text-align:center; font-size:1rem; color:var(--amber);
+            margin-bottom:22px; font-weight:700;
+        }
+        .shop-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+        @media(max-width:480px) { .shop-grid { grid-template-columns:1fr; } }
+        .shop-item {
+            background:rgba(255,215,0,0.06); border:1.5px solid rgba(255,215,0,0.25);
+            border-radius:14px; padding:16px 14px; text-align:center;
+            transition:all 0.25s; cursor:pointer;
+        }
+        .shop-item:hover { background:rgba(255,215,0,0.12); border-color:rgba(255,215,0,0.5); transform:translateY(-2px); }
+        .shop-item.purchased { background:rgba(46,204,113,0.1); border-color:rgba(46,204,113,0.4); cursor:default; transform:none; }
+        .shop-item.cant-afford { opacity:0.4; cursor:not-allowed; }
+        .shop-item.cant-afford:hover { transform:none; background:rgba(255,215,0,0.06); }
+        .shop-item-icon { font-size:2rem; margin-bottom:8px; }
+        .shop-item-name { font-family:'Cinzel',serif; font-size:0.85rem; color:var(--parchment); margin-bottom:4px; }
+        .shop-item-desc { font-size:0.72rem; color:var(--silver); margin-bottom:10px; line-height:1.4; }
+        .shop-item-price {
+            font-size:0.8rem; font-weight:700; color:var(--gold);
+            background:rgba(255,215,0,0.12); border-radius:20px; padding:3px 10px;
+            display:inline-block;
+        }
+        .shop-item.purchased .shop-item-price { color:var(--emerald); background:rgba(46,204,113,0.12); }
+        .shop-effect-label {
+            font-size:0.68rem; color:rgba(255,255,255,0.3);
+            margin-top:6px; font-style:italic;
+        }
+        .btn-close-shop {
+            width:100%; padding:12px;
+            background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15);
+            color:var(--silver); border-radius:12px; cursor:pointer;
+            font-size:0.9rem; transition:all 0.2s;
+        }
+        .btn-close-shop:hover { background:rgba(255,255,255,0.12); }
+
+        /* ─── HISTORY MODAL ─── */
+        .history-modal-box {
+            background:linear-gradient(145deg,#1a0933,#2d1b4e);
+            border:2px solid rgba(255,255,255,0.15);
+            border-radius:24px; padding:30px 32px;
+            max-width:520px; width:94%;
+            max-height:85vh; overflow-y:auto;
+            box-shadow:0 24px 70px rgba(0,0,0,0.7);
+        }
+        .history-title {
+            font-family:'Cinzel',serif; font-size:1.4rem; color:var(--gold);
+            margin-bottom:16px; text-align:center;
+        }
+        .history-day-card {
+            background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09);
+            border-radius:12px; padding:14px 16px; margin-bottom:10px;
+        }
+        .history-day-header {
+            display:flex; align-items:center; justify-content:space-between;
+            margin-bottom:8px; cursor:pointer;
+        }
+        .history-day-title { font-weight:700; font-size:0.9rem; }
+        .history-day-badge {
+            font-size:0.72rem; padding:3px 10px; border-radius:10px; font-weight:700;
+        }
+        .badge-perfect { background:rgba(46,204,113,0.2); color:var(--emerald); border:1px solid rgba(46,204,113,0.3); }
+        .badge-partial  { background:rgba(255,183,0,0.2); color:var(--amber); border:1px solid rgba(255,183,0,0.3); }
+        .badge-missed   { background:rgba(231,76,60,0.2); color:#ff7675; border:1px solid rgba(231,76,60,0.3); }
+        .history-habits-list { padding-left:4px; }
+        .history-habit-row {
+            display:flex; align-items:flex-start; gap:8px;
+            font-size:0.78rem; color:var(--silver); padding:4px 0;
+            border-bottom:1px solid rgba(255,255,255,0.05);
+        }
+        .history-habit-row:last-child { border-bottom:none; }
+        .history-habit-status { font-size:0.85rem; flex-shrink:0; margin-top:1px; }
+        .history-proof-text {
+            font-size:0.7rem; color:rgba(255,255,255,0.3);
+            font-style:italic; margin-top:2px;
+        }
+        .history-empty { text-align:center; color:var(--silver); font-style:italic; padding:30px 0; }
+        .btn-close-history {
+            width:100%; padding:12px; margin-top:10px;
+            background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15);
+            color:var(--silver); border-radius:12px; cursor:pointer; font-size:0.9rem; transition:all 0.2s;
+        }
+        .btn-close-history:hover { background:rgba(255,255,255,0.12); }
+
+        /* ─── END DAY CONFIRM MODAL ─── */
+        .endday-modal-box {
+            background:linear-gradient(145deg,#1e0d3a,#2d1b4e);
+            border:2px solid rgba(255,183,0,0.5);
+            border-radius:24px; padding:34px 38px;
+            max-width:420px; width:92%; text-align:center;
+            box-shadow:0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(255,183,0,0.08);
+        }
+        .endday-icon { font-size:2.8rem; margin-bottom:10px; }
+        .endday-modal-title {
+            font-family:'Cinzel',serif; font-size:1.4rem; color:var(--amber); margin-bottom:8px;
+        }
+        .endday-modal-summary {
+            background:rgba(255,183,0,0.07); border:1px solid rgba(255,183,0,0.2);
+            border-radius:12px; padding:14px 16px; margin:14px 0;
+            font-size:0.9rem; color:var(--parchment); line-height:1.7; text-align:left;
+        }
+        .endday-modal-warning {
+            font-size:0.82rem; color:rgba(255,255,255,0.4); margin-bottom:18px;
+            font-style:italic;
+        }
+        .endday-modal-btns { display:flex; gap:10px; }
+        .btn-endday-yes {
+            flex:1; padding:13px;
+            background:linear-gradient(135deg,var(--amber),var(--gold));
+            color:var(--deep-purple); font-family:'Cinzel',serif;
+            font-size:0.95rem; font-weight:700; border:none;
+            border-radius:12px; cursor:pointer; transition:all 0.2s;
+        }
+        .btn-endday-yes:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(255,183,0,0.35); }
+        .btn-endday-no {
+            padding:13px 18px;
+            background:rgba(255,255,255,0.07); color:var(--silver);
+            border:1px solid rgba(255,255,255,0.15); border-radius:12px;
+            cursor:pointer; font-size:0.9rem; transition:all 0.2s;
+        }
+        .btn-endday-no:hover { background:rgba(255,255,255,0.12); }
+
+        /* ─── SHOP BUFF ACTIVE INDICATORS ─── */
+        .buff-indicator {
+            display:inline-flex; align-items:center; gap:4px;
+            font-size:0.7rem; background:rgba(46,204,113,0.15);
+            border:1px solid rgba(46,204,113,0.3); color:var(--emerald);
+            border-radius:20px; padding:3px 10px; margin:2px;
+        }
+
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes fadeInDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:none} }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+        @keyframes slideIn { from{opacity:0;transform:translateX(-15px)} to{opacity:1;transform:none} }
+        @keyframes slideInRight { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:none} }
+        @keyframes fadeOut { from{opacity:1} to{opacity:0;pointer-events:none} }
+        @keyframes shimmer { 0%{left:-100%} 100%{left:200%} }
+        @keyframes floatUp {
+            0%{opacity:1;transform:translateY(0) scale(1)}
+            100%{opacity:0;transform:translateY(-80px) scale(1.2)}
+        }
+        @keyframes pulse {
+            0%,100%{box-shadow:0 0 8px rgba(255,215,0,0.2)}
+            50%{box-shadow:0 0 22px rgba(255,215,0,0.5)}
+        }
+        @keyframes levelUpGlow {
+            0%,100%{box-shadow:0 0 0 rgba(255,215,0,0)}
+            50%{box-shadow:0 0 35px rgba(255,215,0,0.7), 0 0 60px rgba(255,215,0,0.3)}
+        }
+        @keyframes streakBounce {
+            0%,100%{transform:scale(1)}
+            40%{transform:scale(1.3)}
+            70%{transform:scale(0.95)}
+        }
+
+        /* ─── RESPONSIVE PORTRAIT ─── */
+        @media(max-width:600px) {
+            .char-stats-row { grid-template-columns:1fr; }
+            .day-banner { flex-direction:column; }
+            .char-top { flex-direction:column; align-items:flex-start; }
+            .modal-box { padding:28px 22px; }
+        }
+
+        /* ─── LANDSCAPE MODE TOGGLE BUTTON ─── */
+        .btn-landscape-toggle {
+            position: fixed;
+            bottom: 18px;
+            right: 18px;
+            z-index: 500;
+            background: linear-gradient(135deg, rgba(74,45,124,0.9), rgba(26,9,51,0.95));
+            border: 1.5px solid rgba(255,215,0,0.5);
+            border-radius: 50px;
+            padding: 9px 16px;
+            color: var(--gold);
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 15px rgba(255,215,0,0.1);
+            transition: all 0.25s;
+            white-space: nowrap;
+        }
+        .btn-landscape-toggle:hover {
+            border-color: var(--gold);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.5), 0 0 20px rgba(255,215,0,0.25);
+            transform: translateY(-2px);
+        }
+        .btn-landscape-toggle .toggle-icon {
+            font-size: 1rem;
+            transition: transform 0.3s;
+        }
+        body.landscape-mode .btn-landscape-toggle .toggle-icon {
+            transform: rotate(90deg);
+        }
+
+        /* ─── LANDSCAPE LAYOUT ─── */
+        @media (min-width: 768px) {
+            body.landscape-mode .container {
+                max-width: 100%;
+                padding: 16px 20px;
+            }
+            body.landscape-mode header {
+                margin-bottom: 16px;
+            }
+            body.landscape-mode header h1 {
+                font-size: clamp(1.4rem, 3vw, 2rem);
+                letter-spacing: 2px;
+            }
+            body.landscape-mode header .subtitle {
+                font-size: 0.85rem;
+            }
+
+            /* Two-column grid layout */
+            body.landscape-mode .landscape-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                align-items: start;
+            }
+            body.landscape-mode .landscape-col-left {}
+            body.landscape-mode .landscape-col-right {}
+
+            /* Compact day banner */
+            body.landscape-mode .day-banner {
+                padding: 14px 18px;
+                margin-bottom: 14px;
+                gap: 10px;
+            }
+            body.landscape-mode .day-counter { font-size: 1.3rem; }
+            body.landscape-mode .phase-info { font-size: 0.85rem; }
+            body.landscape-mode .phase-description { font-size: 0.78rem; }
+
+            /* Compact character card */
+            body.landscape-mode .character-card {
+                padding: 16px 18px;
+                margin-bottom: 14px;
+            }
+            body.landscape-mode .char-top { margin-bottom: 12px; }
+            body.landscape-mode .character-name { font-size: 1.3rem; }
+            body.landscape-mode .progress-bar { height: 16px; }
+            body.landscape-mode .bonus-row { margin-top: 12px; gap: 10px; }
+            body.landscape-mode .bonus-value { font-size: 1.4rem; }
+            body.landscape-mode .bonus-card { padding: 10px 12px; }
+
+            /* Compact info box */
+            body.landscape-mode .info-box {
+                padding: 12px 16px;
+                margin-bottom: 14px;
+                font-size: 0.82rem;
+            }
+
+            /* Compact task section */
+            body.landscape-mode .task-section {
+                padding: 16px 18px;
+                margin-bottom: 14px;
+            }
+            body.landscape-mode .task-item {
+                padding: 10px 13px;
+                gap: 9px;
+            }
+            body.landscape-mode .task-name { font-size: 0.88rem; }
+            body.landscape-mode .task-description { font-size: 0.74rem; }
+
+            /* Compact calendar */
+            body.landscape-mode .calendar-section {
+                padding: 16px 18px;
+                margin-bottom: 14px;
+            }
+            body.landscape-mode .calendar-grid {
+                grid-template-columns: repeat(10, 1fr);
+                gap: 5px;
+            }
+            body.landscape-mode .cal-day { font-size: 0.72rem; }
+
+            /* Compact achievements */
+            body.landscape-mode .achievements-section {
+                padding: 16px 18px;
+                margin-bottom: 14px;
+            }
+            body.landscape-mode .achievements-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 8px;
+            }
+            body.landscape-mode .achievement-item { padding: 10px 8px; }
+            body.landscape-mode .achievement-icon { font-size: 1.5rem; }
+            body.landscape-mode .achievement-name { font-size: 0.7rem; }
+            body.landscape-mode .achievement-desc { font-size: 0.62rem; }
+        }
+
+        /* Landscape on small screens (phone horizontal) */
+        @media (orientation: landscape) and (max-height: 500px) {
+            body.landscape-mode .container {
+                max-width: 100%;
+                padding: 10px 16px;
+            }
+            body.landscape-mode header h1 { font-size: 1.3rem; }
+            body.landscape-mode header { margin-bottom: 10px; }
+            body.landscape-mode .day-banner { padding: 10px 14px; margin-bottom: 10px; }
+            body.landscape-mode .day-counter { font-size: 1.1rem; }
+            body.landscape-mode .character-card { padding: 12px 14px; margin-bottom: 10px; }
+            body.landscape-mode .bonus-value { font-size: 1.2rem; }
+            body.landscape-mode .task-section { padding: 12px 14px; margin-bottom: 10px; }
+            body.landscape-mode .task-item { padding: 8px 10px; }
+            body.landscape-mode .calendar-section { padding: 12px 14px; }
+            body.landscape-mode .achievements-section { padding: 12px 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══════════ SETUP MODAL ══════════ -->
+<div id="setupModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-title">⚔️ Quest Keeper</div>
+        <p>Selamat datang, mahasiswa UNP!<br>30 hari ke depan kamu akan taklukkan tugas Smile, absen perfect, dan bangun kebiasaan juara.<br><br>Siapa nama pahlawanmu?</p>
+        <input type="text" id="heroNameInput" placeholder="Masukkan namamu..." maxlength="18" autofocus>
+        <div class="input-error-msg" id="nameError">⚠️ Masukkan namamu dulu!</div>
+        <button type="button" class="btn-start" onclick="startJourney()">🚀 Mulai Perjalanan!</button>
+        <button type="button" class="btn-reset-small" onclick="hardReset()">Reset semua data</button>
+    </div>
+</div>
+
+<!-- ══════════ DATE CHANGE MODAL ══════════ -->
+<div id="dateModal" class="modal-overlay" style="display:none">
+    <div class="date-modal-box">
+        <div class="modal-title">📅 Ubah Tanggal Mulai</div>
+        <p>Pilih tanggal kapan challenge ini dimulai.<br>Tanggal mulai menentukan Hari 1 challangemu.</p>
+        <div class="date-input-wrap">
+            <label>Tanggal Hari 1 Challenge</label>
+            <input type="date" id="startDateInput">
+        </div>
+        <div class="date-warning" id="dateWarning">
+            ⚠️ Mengubah tanggal mulai akan mereset semua progress, XP, Gold, dan streak. Aksi ini tidak bisa dibatalkan.
+        </div>
+        <div class="date-modal-btns">
+            <button class="btn-cancel-date" onclick="closeDateModal()">Batal</button>
+            <button class="btn-confirm-date" onclick="confirmDateChange()">✓ Terapkan</button>
+        </div>
+    </div>
+</div>
+
+
+<div id="achievementToast" style="display:none"><!-- dynamic --></div>
+
+<!-- ══════════ ANTI-CHEAT VERIFICATION MODAL ══════════ -->
+<div id="anticheatOverlay" class="anticheat-overlay">
+    <div class="anticheat-box">
+        <div class="anticheat-icon">🛡️</div>
+        <div class="anticheat-title">Verifikasi Bukti</div>
+        <p class="anticheat-subtitle">Tulis minimal <strong style="color:var(--fire)">10 kata</strong> tentang apa yang benar-benar kamu lakukan. Kejujuranmu adalah kekuatanmu!</p>
+        <div class="anticheat-task-label" id="anticheatTaskLabel">📋 Quest</div>
+        <textarea class="anticheat-textarea" id="anticheatTextarea" placeholder="Contoh: Saya sudah absen Smile jam 08:00 tadi pagi di kelas X dengan dosen Bu Rina..." oninput="onProofInput()"></textarea>
+        <div class="anticheat-word-counter insufficient" id="anticheatCounter">0 / 10 kata minimum</div>
+        <div class="anticheat-actions">
+            <button class="btn-anticheat-cancel" onclick="closeAnticheat()">✕ Batalkan</button>
+            <button class="btn-anticheat-confirm" id="anticheatConfirmBtn" onclick="confirmProof()">⚔️ Konfirmasi Selesai</button>
+        </div>
+        <div class="anticheat-hint">💡 Menulis bukti nyata membantu otakmu tahu kamu beneran selesai — bukan sekadar centang kosong.</div>
+    </div>
+</div>
+
+
+<!-- ══════════ SHOP MODAL ══════════ -->
+<div id="shopModal" class="modal-overlay" style="display:none">
+    <div class="shop-modal-box">
+        <div class="shop-title">🏪 Toko Pejuang</div>
+        <div class="shop-gold-display">💰 Gold kamu: <span id="shopGoldDisplay">0</span></div>
+        <div class="shop-grid" id="shopGrid"><!-- rendered by JS --></div>
+        <button class="btn-close-shop" onclick="closeShop()">✕ Tutup Toko</button>
+    </div>
+</div>
+
+<!-- ══════════ HISTORY MODAL ══════════ -->
+<div id="historyModal" class="modal-overlay" style="display:none">
+    <div class="history-modal-box">
+        <div class="history-title">📖 Riwayat 30 Hari</div>
+        <div id="historyContent"><!-- rendered by JS --></div>
+        <button class="btn-close-history" onclick="closeHistory()">✕ Tutup</button>
+    </div>
+</div>
+
+<!-- ══════════ END DAY CONFIRM MODAL ══════════ -->
+<div id="enddayModal" class="modal-overlay" style="display:none">
+    <div class="endday-modal-box">
+        <div class="endday-icon" id="enddayIcon">🌙</div>
+        <div class="endday-modal-title" id="enddayTitle">Tutup Hari Ini?</div>
+        <div class="endday-modal-summary" id="enddaySummary"></div>
+        <div class="endday-modal-warning" id="enddayWarning"></div>
+        <div class="endday-modal-btns">
+            <button class="btn-endday-no" onclick="closeEnddayModal()">← Kembali</button>
+            <button class="btn-endday-yes" onclick="endDay()">✅ Ya, Tutup Hari Ini</button>
+        </div>
+    </div>
+</div>
+
+<!-- Landscape Toggle Button -->
+<button class="btn-landscape-toggle" id="landscapeToggleBtn" onclick="toggleLandscapeMode()" title="Toggle Landscape Mode">
+    <span class="toggle-icon">⇄</span>
+    <span id="landscapeBtnLabel">Landscape</span>
+</button>
+
+<div class="container">
+    <header>
+        <h1>⚔ QUEST KEEPER</h1>
+        <div class="subtitle">30-Day Smile UNP Challenge · Tugas On-Time · IPK +0.5</div>
+    </header>
+
+    <!-- Landscape Grid Wrapper -->
+    <div class="landscape-grid" id="landscapeGrid">
+    <div class="landscape-col-left" id="landscapeLeft">
+
+    <!-- Day Banner -->
+    <div class="day-banner" id="dayBanner">
+        <div class="day-left">
+            <div class="day-counter">Hari <span id="dayNumber">1</span> dari 30</div>
+            <div class="phase-info">
+                <span id="phaseName">Fase 1</span>
+                <span class="phase-badge phase-1" id="phaseBadge">Tiny Habits</span>
+            </div>
+            <div class="phase-description" id="phaseDescription"></div>
+        </div>
+        <div class="day-right">
+            <div style="font-size:0.8rem;color:var(--silver);margin-bottom:4px;">Progress</div>
+            <div class="day-progress-bar">
+                <div class="day-progress-fill" id="dayProgressFill" style="width:3%"></div>
+            </div>
+            <div class="day-pct-text" id="dayPctText">3%</div>
+            <div style="margin-top:10px">
+                <button class="btn-settings" onclick="openDateModal()">⚙️ Ubah Tanggal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Character Card -->
+    <div class="character-card" id="characterCard">
+        <div class="char-top">
+            <div class="char-name-section">
+                <div class="character-name" id="characterName">Hero</div>
+                <div class="level-badge" id="levelDisplay">LV 1</div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                <div id="buffIndicators"></div>
+                <button class="btn-settings" onclick="exportData()" title="Backup data ke file JSON">💾 Backup</button>
+                <button class="btn-settings" onclick="document.getElementById('importFile').click()" title="Restore dari backup">📂 Restore</button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+            </div>
+        </div>
+        <div class="char-stats-row">
+            <div class="stat-block">
+                <div class="stat-label">
+                    <span>❤️ HP</span>
+                    <span id="hpText">50/50</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill hp-fill" id="hpBar" style="width:100%">100%</div>
+                </div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-label">
+                    <span>✨ XP</span>
+                    <span id="xpText">0/100</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill xp-fill" id="xpBar" style="width:0%">0%</div>
+                </div>
+            </div>
+        </div>
+        <div class="bonus-row">
+            <div class="bonus-card streak-card">
+                <div class="bonus-value" id="streakDisplay">🔥 0</div>
+                <div class="bonus-label">Streak Hari Ini</div>
+                <div class="streak-best" id="longestStreakDisplay">Terbaik: 0 hari</div>
+            </div>
+            <div class="bonus-card gold-card">
+                <div class="bonus-value" id="goldDisplay">0</div>
+                <div class="bonus-label">💰 Gold</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Box -->
+    <div class="info-box">
+        <div class="info-title">💡 Tips Hari Ini</div>
+        <div id="infoText">Selamat datang! 30 hari ke depan kamu akan bangun rutinitas belajar, selesaikan tugas Smile on-time, dan raih IPK terbaik di UNP.</div>
+    </div>
+
+    <!-- Daily Tasks -->
+    <div class="task-section" id="taskSection">
+        <div class="section-header">
+            <div class="section-title">🎯 Daily Quests</div>
+            <div class="completion-chip" id="completionChip">0/0 selesai</div>
+        </div>
+        <div class="task-list" id="habitsList">
+            <div class="empty-state">Loading quests...</div>
+        </div>
+        <div class="end-day-section">
+            <button class="btn-end-day" id="endDayBtn" onclick="confirmEndDay()">🌙 Selesaikan Hari Ini</button>
+            <div class="finalized-note" id="finalizedNote" style="display:none">
+                ✅ Hari ini sudah ditutup
+            </div>
+        </div>
+    </div><!-- /task-section -->
+
+    </div><!-- /landscape-col-left -->
+    <div class="landscape-col-right" id="landscapeRight">
+
+    <!-- 30-Day Calendar -->
+    <div class="calendar-section">
+        <div class="calendar-header">
+            <div class="calendar-title">📅 30-Day Journey</div>
+            <button class="btn-settings" onclick="openHistory()" style="font-size:0.78rem">📖 Riwayat Hari</button>
+            <div class="calendar-legend">
+                <div class="legend-item"><div class="legend-dot" style="background:var(--emerald)"></div>Sempurna</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Sebagian</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--ruby)"></div>Terlewat</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>Hari ini</div>
+            </div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+
+    <!-- Achievements -->
+    <div class="achievements-section">
+        <div class="achievements-title">🏆 Pencapaian</div>
+        <div class="achievements-grid" id="achievementsGrid"></div>
+    </div>
+
+    </div><!-- /landscape-col-right -->
+    </div><!-- /landscape-grid -->
+
+</div><!-- /container -->
+
+<script>
+// ═══════════════════════════════════════════════════
+//  CONSTANTS
+// ═══════════════════════════════════════════════════
+const XP_REWARD       = 20;
+const GOLD_REWARD     = 15;
+const XP_BONUS_FULL   = 50;   // bonus when all habits done
+const GOLD_BONUS_FULL = 30;
+const DAMAGE_PARTIAL  = 8;    // HP damage per missed habit
+const DAMAGE_FULL_MISS= 25;   // HP damage if 0 habits done
+const LEVEL_MULTI     = 1.5;
+
+// ─── SHOP ITEMS ───
+const SHOP_ITEMS = [
+    {
+        id: 'hp_potion', icon: '🧪', name: 'Ramuan HP',
+        desc: 'Pulihkan 20 HP sekarang. Berguna saat hampir mati!',
+        price: 50, type: 'consumable',
+        effect: (gs) => { gs.character.hp = Math.min(gs.character.maxHp, gs.character.hp + 20); }
+    },
+    {
+        id: 'xp_scroll', icon: '📜', name: 'Gulungan XP',
+        desc: 'Bonus +100 XP instan. Percepat level-up!',
+        price: 80, type: 'consumable',
+        effect: (gs) => { gs.character.xp += 100; checkLevelUp(); }
+    },
+    {
+        id: 'shield_buff', icon: '🛡️', name: 'Tameng Hari',
+        desc: 'Lindungi dari damage HP besok jika kamu lupa finalisasi. Aktif 1 hari.',
+        price: 100, type: 'buff_1day',
+        effect: (gs) => { gs.buffs.shieldDay = gs.currentDay + 1; }
+    },
+    {
+        id: 'streak_saver', icon: '🔮', name: 'Penjaga Streak',
+        desc: 'Simpan streak-mu sekali — jika 1 hari terlewat, streak tidak reset. 1x pakai.',
+        price: 150, type: 'buff_once',
+        effect: (gs) => { gs.buffs.streakSaver = true; }
+    },
+    {
+        id: 'double_xp', icon: '⚡', name: 'XP Ganda',
+        desc: 'Semua XP hari ini jadi 2× lipat. Aktif hari ini saja.',
+        price: 120, type: 'buff_today',
+        effect: (gs) => { gs.buffs.doubleXpDay = gs.currentDay; }
+    },
+    {
+        id: 'max_hp_up', icon: '💗', name: 'Ekspansi HP',
+        desc: 'Tambah +15 Max HP permanen. Beli sekali saja.',
+        price: 200, type: 'permanent_once',
+        effect: (gs) => { gs.character.maxHp += 15; gs.character.hp = Math.min(gs.character.hp + 15, gs.character.maxHp); }
+    },
+];
+
+const ACHIEVEMENTS = [
+    { id:'day1',     icon:'🌱', name:'Langkah Pertama',    desc:'Selesaikan hari pertama',          check: s => s.streak >= 1 || Object.keys(s.dayResults).length >= 1 },
+    { id:'streak3',  icon:'🔥', name:'On Fire!',           desc:'3 hari berturut-turut',            check: s => s.streak >= 3 || s.longestStreak >= 3 },
+    { id:'streak7',  icon:'⚡', name:'Seminggu Penuh',     desc:'7 hari berturut-turut',            check: s => s.streak >= 7 || s.longestStreak >= 7 },
+    { id:'day7',     icon:'🗡️', name:'Warrior',            desc:'Capai hari ke-7',                  check: s => s.currentDay >= 7 },
+    { id:'day14',    icon:'🛡️', name:'Knight',             desc:'Capai hari ke-14',                 check: s => s.currentDay >= 14 },
+    { id:'day21',    icon:'👑', name:'Champion',           desc:'Capai hari ke-21!',               check: s => s.currentDay >= 21 },
+    { id:'day30',    icon:'🏆', name:'LEGEND',             desc:'Selesaikan 30 hari penuh!',       check: s => s.currentDay >= 30 },
+    { id:'lv5',      icon:'⭐', name:'Level 5',            desc:'Capai level 5',                    check: s => s.character.level >= 5 },
+    { id:'lv10',     icon:'🌟', name:'Level 10',           desc:'Capai level 10',                   check: s => s.character.level >= 10 },
+    { id:'gold100',  icon:'💰', name:'Kolektor Gold',      desc:'Kumpulkan 100 Gold',               check: s => s.character.gold >= 100 },
+    { id:'noMiss',   icon:'💎', name:'Diamond Run',        desc:'Semua hari sempurna — tidak ada habit yang terlewat',   check: s => {
+        // ALL finalized days must have completed === total (truly perfect days)
+        return Object.keys(s.dayResults).length > 0 &&
+               Object.values(s.dayResults).every(r => r.completed === r.total && r.total > 0);
+    }},
+    { id:'shopFirst', icon:'🛒', name:'Pembeli Pertama',    desc:'Beli item pertama dari Toko',      check: s => s.purchases && s.purchases.length > 0 },
+    { id:'allProven', icon:'🔏', name:'Pejuang Jujur',     desc:'Verifikasi bukti 10 habit berturut-turut', check: s => {
+        let streak = 0, best = 0;
+        const days = Object.keys(s.habitCompletions).sort();
+        for (const k of days) {
+            const c = s.habitCompletions[k];
+            if (c && c.completed && c.proof) { streak++; best = Math.max(best, streak); }
+            else streak = 0;
+        }
+        return best >= 10;
+    }},
+    { id:'survivor', icon:'🩸', name:'Near Death',         desc:'HP turun di bawah 20%',            check: s => (s.character.hp / s.character.maxHp) < 0.2 },
+];
+
+const PHASE_INFO = {
+    1: {
+        name:'Minggu 1: Bangun Rutinitas', badge:'Smile On-Time', class:'phase-1',
+        description:'Mulai kecil, prioritas tugas Smile. Bangun fondasi pagi & tidur teratur agar otakmu siap belajar.',
+        tip:'BJ Fogg: Mulai dari yang kecil dan hampir mustahil gagal. Konsistensi > Intensitas!'
+    },
+    2: {
+        name:'Minggu 2: Boost Fokus Tugas', badge:'Pomodoro Mode', class:'phase-2',
+        description:'Integrasikan Pomodoro untuk tugas Smile. Satu sesi fokus per hari, review catatan, ringkas materi.',
+        tip:'Deep work 25 menit > Scroll 2 jam. Kamu sedang membangun neural pathway belajar!'
+    },
+    3: {
+        name:'Minggu 3: Skill Praktis', badge:'Tools Mahasiswa', class:'phase-3',
+        description:'Ganti dengan tools mahasiswa Smile UNP. Review harian, to-do list, dan manajemen anggaran kos.',
+        tip:'Hari 15-21 adalah periode kritis pembentukan habit. Jangan skip sehari pun!'
+    },
+    4: {
+        name:'Minggu 4: Mastery & Scale', badge:'Lulusan Top UNP', class:'phase-4',
+        description:'Holistik untuk lulusan top UNP. Rutinitas penuh, no-scrolling, latihan soal, dan evaluasi 30 hari.',
+        tip:'1% lebih baik tiap hari = 37x lebih baik setahun. IPK +0.5 dimulai dari sini!'
+    }
+};
+
+const HABIT_PROGRAM = [
+    // ── DAY 1 ──
+    {day:1, name:'Meditasi napas 3 menit (visualisasi tugas selesai)', description:'Program otak pagi hari untuk fokus pada tugas Smile', phase:1},
+    {day:1, name:'Jalan kaki 10 menit ke kampus', description:'Aktivasi tubuh + transisi mental dari kos ke mode belajar', phase:1},
+    {day:1, name:'Journal: "3 tugas Smile prioritas hari ini"', description:'Clarity pagi = eksekusi siang yang lebih baik', phase:1},
+    {day:1, name:'No HP 30 menit sebelum tidur jam 22:00', description:'Wind-down otak untuk tidur 7-8 jam berkualitas', phase:1},
+
+    // ── DAY 2 ──
+    {day:2, name:'Meditasi napas 3 menit', description:'Konsistensi lebih penting dari durasi di awal', phase:1},
+    {day:2, name:'Jalan kaki 10 menit ke kampus', description:'Gerakan pagi membantu mood & konsentrasi', phase:1},
+    {day:2, name:'Journal: "3 tugas Smile prioritas hari ini"', description:'Ulangi ritual pagi untuk membangun kebiasaan', phase:1},
+    {day:2, name:'Tidur jam 22:00, no HP 30 menit sebelumnya', description:'Regulasi jam tidur dimulai dari hari kedua', phase:1},
+
+    // ── DAY 3 ──
+    {day:3, name:'Meditasi napas 3 menit', description:'Otak mulai mengenali pola rutinitas pagi', phase:1},
+    {day:3, name:'Jalan kaki 10 menit ke kampus', description:'Bangun konsistensi gerak pagi', phase:1},
+    {day:3, name:'Journal: "3 tugas Smile prioritas hari ini"', description:'Tuliskan prioritas sebelum membuka HP', phase:1},
+    {day:3, name:'Absen kuliah hari ini 100%', description:'Target absen perfect dimulai dari hari 1', phase:1},
+    {day:3, name:'Tidur jam 22:00, no HP 30 menit sebelumnya', description:'Tidur cukup = memori tugas lebih kuat', phase:1},
+
+    // ── DAY 4 ──
+    {day:4, name:'Meditasi napas 3 menit', description:'Napas dalam menurunkan kortisol sebelum hari padat', phase:1},
+    {day:4, name:'Jalan kaki 10 menit ke kampus', description:'Rutinitas gerak pagi makin otomatis', phase:1},
+    {day:4, name:'Journal: "3 tugas Smile prioritas hari ini"', description:'Konsistensi journaling = clarity makin tajam', phase:1},
+    {day:4, name:'Absen kuliah hari ini 100%', description:'Absen perfect = poin nilai aman', phase:1},
+    {day:4, name:'Tidur jam 22:00, no HP 30 menit sebelumnya', description:'Pola tidur teratur terbentuk di hari 4', phase:1},
+
+    // ── DAY 5 ──
+    {day:5, name:'Meditasi napas 3 menit', description:'Visualisasikan satu tugas Smile selesai hari ini', phase:1},
+    {day:5, name:'Jalan kaki 10 menit ke kampus', description:'Momentum gerak pagi sudah terbentuk', phase:1},
+    {day:5, name:'Journal: "3 tugas Smile prioritas hari ini"', description:'Prioritaskan tugas deadline terdekat', phase:1},
+    {day:5, name:'Kerjakan minimal 1 tugas Smile hingga selesai', description:'Progress nyata > planning terus-menerus', phase:1},
+    {day:5, name:'Tidur jam 22:00, no HP 30 menit sebelumnya', description:'5 hari streak tidur tepat waktu!', phase:1},
+
+    // ── DAY 6 ──
+    {day:6, name:'Meditasi napas 3 menit', description:'Rasa tenang pagi = produktif sepanjang hari', phase:1},
+    {day:6, name:'Jalan kaki 10 menit ke kampus', description:'Gerak pagi sudah jadi kebiasaan', phase:1},
+    {day:6, name:'Journal: "3 tugas Smile prioritas hari ini"', description:'Review tugas yang belum selesai kemarin', phase:1},
+    {day:6, name:'Absen kuliah & selesaikan 1 tugas Smile', description:'Dua target utama minggu ini', phase:1},
+    {day:6, name:'Tidur jam 22:00, no HP 30 menit sebelumnya', description:'Satu hari lagi menuju 1 minggu penuh!', phase:1},
+
+    // ── DAY 7 ──
+    {day:7, name:'Meditasi napas 3 menit', description:'Rayakan 1 minggu meditasi konsisten!', phase:1},
+    {day:7, name:'Jalan kaki 10 menit ke kampus', description:'7 hari streak jalan pagi — luar biasa!', phase:1},
+    {day:7, name:'Journal: "3 tugas Smile prioritas hari ini"', description:'Tulis juga: apa yang sudah berhasil minggu ini?', phase:1},
+    {day:7, name:'Cek: Semua tugas Smile minggu ini on-time?', description:'Target Day 7: tugas Smile 100% on-time', phase:1},
+    {day:7, name:'Cek: Absen kuliah sempurna minggu ini?', description:'Target Day 7: absen kuliah perfect', phase:1},
+
+    // ── DAY 8 ──
+    {day:8, name:'Meditasi 5 menit (naik dari 3 menit)', description:'Tingkatkan durasi bertahap — otak sudah siap', phase:2},
+    {day:8, name:'Stretching 15 menit di meja belajar', description:'Stack: bangun + stretching sebelum buka Smile', phase:2},
+    {day:8, name:'Journal: "Apa insight dari tugas Smile kemarin?"', description:'Refleksi aktif memperkuat pemahaman materi', phase:2},
+    {day:8, name:'Jalan kaki 10 menit ke kampus', description:'Rutinitas pagi tetap terjaga', phase:2},
+    {day:8, name:'Tidur jam 22:00, no HP 30 menit sebelumnya', description:'Pertahankan pola tidur minggu lalu', phase:2},
+
+    // ── DAY 9 ──
+    {day:9, name:'Meditasi 5 menit', description:'Fokuskan pikiran sebelum hari dimulai', phase:2},
+    {day:9, name:'Stretching 15 menit di meja belajar', description:'Tubuh rileks = otak lebih mudah fokus', phase:2},
+    {day:9, name:'Journal: "Apa insight dari tugas Smile kemarin?"', description:'Insight harian membangun pemahaman mendalam', phase:2},
+    {day:9, name:'Pomodoro 25 menit: 1 sesi fokus tugas Smile', description:'Pertama kali: set timer, tutup semua tab lain', phase:2},
+    {day:9, name:'Tidur jam 22:00, no HP 30 menit sebelumnya', description:'Konsistensi tidur = mood dan fokus stabil', phase:2},
+
+    // ── DAY 10 ──
+    {day:10, name:'Meditasi 5 menit', description:'Bayangkan tugas hari ini selesai dengan mudah', phase:2},
+    {day:10, name:'Stretching 15 menit di meja belajar', description:'Stretching menurunkan ketegangan bahu dan punggung', phase:2},
+    {day:10, name:'Journal: "Apa insight dari tugas Smile kemarin?"', description:'Journaling insight = catatan belajar aktif', phase:2},
+    {day:10, name:'Pomodoro 25 menit: sesi fokus tugas Smile', description:'Fokus satu tugas tanpa distraksi penuh', phase:2},
+    {day:10, name:'Review catatan kuliah 5 menit setelah kelas', description:'Review segera setelah kuliah = retensi memori 3x lebih baik', phase:2},
+
+    // ── DAY 11 ──
+    {day:11, name:'Meditasi 5 menit', description:'Stabilkan energi sebelum hari kuliah padat', phase:2},
+    {day:11, name:'Stretching 15 menit di meja belajar', description:'Kebiasaan stretching pagi makin otomatis', phase:2},
+    {day:11, name:'Journal: "Apa insight dari tugas Smile kemarin?"', description:'Apa yang paling sulit? Apa yang sudah lebih mudah?', phase:2},
+    {day:11, name:'Pomodoro 25 menit: sesi fokus tugas Smile', description:'Sudah 3 hari Pomodoro — ritme mulai terbentuk!', phase:2},
+    {day:11, name:'Review catatan kuliah 5 menit setelah kelas', description:'Identifikasi poin yang perlu ditanyakan ke dosen', phase:2},
+
+    // ── DAY 12 ──
+    {day:12, name:'Meditasi 5 menit', description:'Fokus pada napas, lepaskan kecemasan tugas', phase:2},
+    {day:12, name:'Stretching 15 menit di meja belajar', description:'Meja belajar bersih + stretching = kondisi ideal belajar', phase:2},
+    {day:12, name:'Journal: "Apa insight dari tugas Smile kemarin?"', description:'Catat pola: jam berapa kamu paling produktif?', phase:2},
+    {day:12, name:'Pomodoro 25 menit: sesi fokus tugas Smile', description:'Coba 2 sesi jika tugas banyak', phase:2},
+    {day:12, name:'Review catatan kuliah 5 menit setelah kelas', description:'Hubungkan catatan baru dengan materi sebelumnya', phase:2},
+
+    // ── DAY 13 ──
+    {day:13, name:'Meditasi 5 menit', description:'6 hari meditasi minggu ini — otakmu makin terlatih!', phase:2},
+    {day:13, name:'Stretching 15 menit di meja belajar', description:'Stretching konsisten minggu kedua', phase:2},
+    {day:13, name:'Journal: "Apa insight dari tugas Smile kemarin?"', description:'Apakah Pomodoro membantu kecepatan kerjamu?', phase:2},
+    {day:13, name:'Pomodoro 25 menit: sesi fokus tugas Smile', description:'Kamu sudah 5 hari Pomodoro berturut-turut!', phase:2},
+    {day:13, name:'Review catatan kuliah 5 menit setelah kelas', description:'Buat pertanyaan kecil dari catatan untuk belajar mandiri', phase:2},
+
+    // ── DAY 14 ──
+    {day:14, name:'Meditasi 5 menit', description:'2 minggu meditasi konsisten — milestone besar!', phase:2},
+    {day:14, name:'Stretching 15 menit di meja belajar', description:'Tubuh sudah terasa lebih segar tiap pagi', phase:2},
+    {day:14, name:'Journal: "Apa insight dari tugas Smile kemarin?"', description:'Rangkum insight 1 minggu terakhir', phase:2},
+    {day:14, name:'Ringkas 1 materi Smile jadi 1 halaman notes', description:'Target Day 14: 1 halaman ringkasan materi — bantu hafalan!', phase:2},
+    {day:14, name:'Cek: Tugas lebih cepat, hafalan lebih nempel?', description:'Evaluasi dampak Pomodoro + review harian', phase:2},
+
+    // ── DAY 15 ──
+    {day:15, name:'Meditasi 10 menit (naik dari 5 menit)', description:'Durasi meditasi makin panjang = fokus makin dalam', phase:3},
+    {day:15, name:'Olahraga 20 menit: pushup & squat di kos', description:'No gym needed — konsistensi di kamar kos', phase:3},
+    {day:15, name:'Journal: "1 trik baru selesaikan tugas Smile"', description:'Cari satu cara baru tiap hari untuk lebih efisien', phase:3},
+    {day:15, name:'Review to-do list tugas Smile 15 menit sore hari', description:'Centang yang selesai, reschedule yang belum', phase:3},
+    {day:15, name:'Tidur jam 22:00, no HP 30 menit sebelumnya', description:'Pertahankan pola tidur memasuki minggu 3', phase:3},
+
+    // ── DAY 16 ──
+    {day:16, name:'Meditasi 10 menit', description:'Fokus visualisasi: kamu selesaikan semua tugas hari ini', phase:3},
+    {day:16, name:'Olahraga 20 menit: pushup & squat di kos', description:'Hari ke-2 olahraga minggu ini — jaga momentum!', phase:3},
+    {day:16, name:'Journal: "1 trik baru selesaikan tugas Smile"', description:'Trik hari ini: coba teknik baru atau tools baru', phase:3},
+    {day:16, name:'Review to-do list tugas Smile 15 menit sore hari', description:'Prioritaskan tugas dengan deadline terdekat', phase:3},
+    {day:16, name:'Tidur jam 22:00, no HP 30 menit sebelumnya', description:'Konsistensi tidur minggu 3', phase:3},
+
+    // ── DAY 17 ──
+    {day:17, name:'Meditasi 10 menit', description:'3 hari meditasi 10 menit berturut-turut — luar biasa!', phase:3},
+    {day:17, name:'Olahraga 20 menit: pushup & squat di kos', description:'Tubuh makin kuat, stamina belajar ikut meningkat', phase:3},
+    {day:17, name:'Journal: "1 trik baru selesaikan tugas Smile"', description:'Tulis trik manajemen waktu yang berhasil bagimu', phase:3},
+    {day:17, name:'Review to-do list tugas Smile 15 menit sore hari', description:'Apakah semua tugas minggu ini on-track?', phase:3},
+    {day:17, name:'Buat anggaran bulanan di Excel (hemat jajan kos)', description:'Manajemen keuangan kos = bebas stres finansial', phase:3},
+
+    // ── DAY 18 ──
+    {day:18, name:'Meditasi 10 menit', description:'Meditasi pagi mengaktifkan prefrontal cortex untuk fokus', phase:3},
+    {day:18, name:'Olahraga 20 menit: pushup & squat di kos', description:'Konsistensi 4 hari olahraga minggu ini!', phase:3},
+    {day:18, name:'Journal: "1 trik baru selesaikan tugas Smile"', description:'Trik hari ini: strategi menghadapi tugas paling berat', phase:3},
+    {day:18, name:'Review to-do list tugas Smile 15 menit sore hari', description:'Update progress dan coret tugas yang selesai', phase:3},
+    {day:18, name:'Cek dan update anggaran bulanan Excel', description:'Pantau pengeluaran mingguan vs anggaran', phase:3},
+
+    // ── DAY 19 ──
+    {day:19, name:'Meditasi 10 menit', description:'5 hari meditasi berturut-turut minggu ini', phase:3},
+    {day:19, name:'Olahraga 20 menit: pushup & squat di kos', description:'Rasa lelah setelah olahraga = tanda kemajuan', phase:3},
+    {day:19, name:'Journal: "1 trik baru selesaikan tugas Smile"', description:'Refleksi: tools mana yang paling membantu?', phase:3},
+    {day:19, name:'Review to-do list tugas Smile 15 menit sore hari', description:'Persiapkan daftar tugas untuk 2 hari ke depan', phase:3},
+    {day:19, name:'Tidur jam 22:00, no HP 30 menit sebelumnya', description:'Kurangi stimulasi layar untuk tidur lebih nyenyak', phase:3},
+
+    // ── DAY 20 ──
+    {day:20, name:'Meditasi 10 menit', description:'Hampir 3 minggu meditasi — luar biasa konsistensimu!', phase:3},
+    {day:20, name:'Olahraga 20 menit: pushup & squat di kos', description:'6 hari olahraga minggu ini — hampir sempurna!', phase:3},
+    {day:20, name:'Journal: "1 trik baru selesaikan tugas Smile"', description:'Tulis rencana konkret untuk minggu 4', phase:3},
+    {day:20, name:'Review to-do list tugas Smile 15 menit sore hari', description:'Clear semua backlog sebelum masuk minggu 4', phase:3},
+    {day:20, name:'Update dan review anggaran bulanan Excel', description:'Berapa yang sudah hemat dibanding bulan lalu?', phase:3},
+
+    // ── DAY 21 ──
+    {day:21, name:'Meditasi 10 menit', description:'21 HARI MEDITASI! Neural pathway sudah kuat terbentuk', phase:3},
+    {day:21, name:'Olahraga 20 menit: pushup & squat di kos', description:'3 minggu olahraga rutin — tubuhmu sudah berubah!', phase:3},
+    {day:21, name:'Journal: "1 trik baru selesaikan tugas Smile"', description:'Rangkum semua trik terbaik dari minggu 3', phase:3},
+    {day:21, name:'Cek: Tugas Smile efisien & tabungan awal terbentuk?', description:'Target Day 21: Smile efisien + disiplin waktu + tabungan awal', phase:3},
+    {day:21, name:'Review anggaran bulanan Excel', description:'Evaluasi keuangan 3 minggu — sudah ada tabungan?', phase:3},
+
+    // ── DAY 22 ──
+    {day:22, name:'Meditasi 13 menit (naik dari 10 menit)', description:'Full pagi minggu 4 — meditasi lebih panjang, fokus lebih dalam', phase:4},
+    {day:22, name:'Olahraga 25 menit: pushup, squat, plank di kos', description:'Tingkatkan intensitas di minggu terakhir', phase:4},
+    {day:22, name:'Journal: "Progress tugas Smile minggu ini + 1 win"', description:'Celebrate progress, bukan hanya mencatat masalah', phase:4},
+    {day:22, name:'No scroll medsos lebih dari 30 menit hari ini', description:'Ganti waktu scroll dengan latihan soal Smile', phase:4},
+    {day:22, name:'Tidur jam 22:00, no HP 30 menit sebelumnya', description:'Pertahankan disiplin tidur di minggu terakhir', phase:4},
+
+    // ── DAY 23 ──
+    {day:23, name:'Meditasi 13 menit', description:'Fokus pada tujuan akhir: IPK terbaik semester ini', phase:4},
+    {day:23, name:'Olahraga 25 menit di kos', description:'Stamina fisik mendukung stamina belajar', phase:4},
+    {day:23, name:'Journal: "Progress tugas Smile minggu ini + 1 win"', description:'Win hari ini sekecil apapun wajib dicatat', phase:4},
+    {day:23, name:'Latihan soal Smile 30 menit (ganti scroll medsos)', description:'Setiap 30 menit latihan soal = investasi IPK', phase:4},
+    {day:23, name:'No scroll medsos lebih dari 30 menit hari ini', description:'Aplikasikan aturan no-scroll konsisten', phase:4},
+
+    // ── DAY 24 ──
+    {day:24, name:'Meditasi 13 menit', description:'Ketenangan pagi hari = pengambilan keputusan lebih baik', phase:4},
+    {day:24, name:'Olahraga 25 menit di kos', description:'4 hari olahraga minggu terakhir — jaga streak!', phase:4},
+    {day:24, name:'Journal: "Progress tugas Smile minggu ini + 1 win"', description:'Identifikasi: apa yang paling kamu kuasai dari Smile?', phase:4},
+    {day:24, name:'Latihan soal Smile 30 menit (ganti scroll medsos)', description:'Rutinitas latihan soal setiap hari', phase:4},
+    {day:24, name:'Update anggaran Excel + review tabungan', description:'Pantau kondisi keuangan menjelang akhir bulan', phase:4},
+
+    // ── DAY 25 ──
+    {day:25, name:'Meditasi 13 menit', description:'4 hari meditasi berturut-turut minggu 4', phase:4},
+    {day:25, name:'Olahraga 25 menit di kos', description:'Tubuh dan mental siap untuk milestone Day 25', phase:4},
+    {day:25, name:'Journal: "Progress tugas Smile minggu ini + 1 win"', description:'Tulis progress sebelum merekam', phase:4},
+    {day:25, name:'Rekam penjelasan tugas Smile 5 menit (latih presentasi)', description:'Target Day 25: latihan presentasi verbal — siap kerja!', phase:4},
+    {day:25, name:'No scroll medsos lebih dari 30 menit hari ini', description:'Fokus ekstra menuju akhir 30 hari', phase:4},
+
+    // ── DAY 26 ──
+    {day:26, name:'Meditasi 13 menit', description:'Tinggal 5 hari — jangan longgarkan ritme!', phase:4},
+    {day:26, name:'Olahraga 25 menit di kos', description:'Konsistensi olahraga hampir 4 minggu penuh!', phase:4},
+    {day:26, name:'Journal: "Progress tugas Smile minggu ini + 1 win"', description:'Apa improvement terbesar yang kamu rasakan?', phase:4},
+    {day:26, name:'Latihan soal Smile 30 menit', description:'Tingkatkan intensitas latihan soal menjelang akhir', phase:4},
+    {day:26, name:'No scroll medsos lebih dari 30 menit hari ini', description:'Disiplin digital tetap terjaga', phase:4},
+
+    // ── DAY 27 ──
+    {day:27, name:'Meditasi 13 menit', description:'Hampir finish — meditasi untuk menjaga ketenangan', phase:4},
+    {day:27, name:'Olahraga 25 menit di kos', description:'Tinggal 4 hari — jaga momentum olahraga!', phase:4},
+    {day:27, name:'Journal: "Progress tugas Smile minggu ini + 1 win"', description:'Tulis rencana konkret untuk semester berikutnya', phase:4},
+    {day:27, name:'Latihan soal Smile 30 menit', description:'Percayai proses — latihan konsisten = hasil nyata', phase:4},
+    {day:27, name:'Tidur jam 22:00, no HP 30 menit sebelumnya', description:'Istirahat berkualitas menjelang evaluasi akhir', phase:4},
+
+    // ── DAY 28 ──
+    {day:28, name:'Meditasi 13 menit', description:'3 hari lagi menuju transformasi 30 hari!', phase:4},
+    {day:28, name:'Olahraga 25 menit di kos', description:'Penguatan fisik terakhir sebelum grand finale', phase:4},
+    {day:28, name:'Journal: "Progress tugas Smile minggu ini + 1 win"', description:'Mulai outline untuk review total Day 30', phase:4},
+    {day:28, name:'Latihan soal Smile 30 menit', description:'Fokus pada topik yang masih terasa lemah', phase:4},
+    {day:28, name:'No scroll medsos lebih dari 30 menit hari ini', description:'2 hari lagi bebas scroll — pertahankan!', phase:4},
+
+    // ── DAY 29 ──
+    {day:29, name:'Meditasi 13 menit', description:'Hampir di garis finish — jangan turun semangat!', phase:4},
+    {day:29, name:'Olahraga 25 menit di kos', description:'Terakhir kali olahraga sebelum Day 30!', phase:4},
+    {day:29, name:'Journal: "Progress tugas Smile minggu ini + 1 win"', description:'Tuliskan 3 perubahan terbesar dalam 29 hari ini', phase:4},
+    {day:29, name:'Latihan soal Smile 30 menit', description:'Satu sesi terakhir sebelum review besar', phase:4},
+    {day:29, name:'No scroll medsos lebih dari 30 menit hari ini', description:'29 hari disiplin — 1 hari lagi!', phase:4},
+
+    // ── DAY 30 ──
+    {day:30, name:'Meditasi 13 menit — hari terakhir & terbaik!', description:'30 hari meditasi penuh — kamu sudah berubah!', phase:4},
+    {day:30, name:'Olahraga 25 menit — grand finale!', description:'Rayakan 30 hari olahraga dengan sesi terbaik!', phase:4},
+    {day:30, name:'Journal: "Progress + 1 win terbesar 30 hari"', description:'Tulis pencapaian paling membanggakan selama challenge', phase:4},
+    {day:30, name:'Review total tugas Smile 30 hari', description:'Target Day 30: evaluasi lengkap semua tugas Smile', phase:4},
+    {day:30, name:'Buat rencana semester berikutnya (next level Smile)', description:'Target Day 30: rencana semester next — IPK potensial +0.5!', phase:4},
+];
+
+// ═══════════════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════════════
+let gameState = {
+    character: { name:'', level:1, hp:50, maxHp:50, xp:0, xpToLevel:100, gold:0 },
+    streak: 0,
+    longestStreak: 0,
+    currentDay: 1,
+    startDate: null,
+    habitCompletions: {},  // `day${d}_${name}` -> { completed: bool, proof?: string }
+    dayResults: {},        // `day${d}` -> { total, completed } (set after endDay())
+    dayFinalized: {},      // `day${d}` -> bool
+    lastCheckDate: null,
+    achievements: [],
+    purchases: [],         // list of shop item ids bought (for consumable repeat)
+    buffs: {
+        shieldDay: 0,      // day number that shield is active for
+        streakSaver: false,// one-time streak protection
+        doubleXpDay: -1    // day number that double XP is active
+    }
+};
+
+// ═══════════════════════════════════════════════════
+//  SETUP
+// ═══════════════════════════════════════════════════
+function startJourney() {
+    const input = document.getElementById('heroNameInput');
+    const errMsg = document.getElementById('nameError');
+    const name = input.value.trim();
+    if (!name) {
+        input.classList.add('error');
+        errMsg.classList.add('show');
+        input.focus();
+        setTimeout(() => input.classList.remove('error'), 500);
+        return;
+    }
+    input.classList.remove('error');
+    errMsg.classList.remove('show');
+    gameState.character.name = name;
+    // Challenge starts tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    gameState.startDate = tomorrow.toISOString();
+    gameState.lastCheckDate = new Date().toDateString();
+    document.getElementById('setupModal').style.display = 'none';
+    saveGame();
+    updateUI();
+}
+
+function hardReset() {
+    // FIX #14: Double confirmation for destructive reset
+    if (!confirm('⚠️ PERINGATAN: Ini akan menghapus SEMUA data progress, XP, streak, dan achievements. Aksi ini TIDAK BISA dibatalkan!\n\nApakah kamu yakin?')) return;
+    const confirm2 = prompt('Ketik "RESET" untuk konfirmasi:');
+    if (confirm2 !== 'RESET') { alert('Reset dibatalkan.'); return; }
+    localStorage.removeItem('questKeeper_v2');
+    localStorage.removeItem('questKeeper30DayData');
+    location.reload();
+}
+
+// ═══════════════════════════════════════════════════
+//  PERSISTENCE
+// ═══════════════════════════════════════════════════
+function loadGame() {
+    try {
+        const saved = localStorage.getItem('questKeeper_v2');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            // Only restore if name exists, otherwise show setup modal
+            if (parsed.character && parsed.character.name) {
+                gameState = parsed;
+                if (!gameState.streak) gameState.streak = 0;
+                if (!gameState.longestStreak) gameState.longestStreak = 0;
+                if (!gameState.dayResults) gameState.dayResults = {};
+                if (!gameState.dayFinalized) gameState.dayFinalized = {};
+                if (!gameState.achievements) gameState.achievements = [];
+                if (!gameState.purchases) gameState.purchases = [];
+                if (!gameState.buffs) gameState.buffs = { shieldDay:0, streakSaver:false, doubleXpDay:-1 };
+                if (gameState.buffs.shieldDay === undefined) gameState.buffs.shieldDay = 0;
+                if (gameState.buffs.streakSaver === undefined) gameState.buffs.streakSaver = false;
+                if (gameState.buffs.doubleXpDay === undefined) gameState.buffs.doubleXpDay = -1;
+                checkAndApplyDayTransition();
+                document.getElementById('setupModal').style.display = 'none';
+            }
+            // else: name missing — keep modal visible
+        }
+    } catch(e) {
+        console.warn('Load failed, starting fresh:', e);
+        localStorage.removeItem('questKeeper_v2');
+    }
+    updateUI();
+}
+
+function saveGame() {
+    localStorage.setItem('questKeeper_v2', JSON.stringify(gameState));
+}
+
+// ═══════════════════════════════════════════════════
+//  DAY MANAGEMENT
+// ═══════════════════════════════════════════════════
+function checkAndApplyDayTransition() {
+    if (!gameState.startDate) return;
+
+    const start      = new Date(gameState.startDate);
+    const today      = new Date();
+    const daysPassed = Math.floor((today - start) / 86400000);
+    const newDay     = Math.max(0, Math.min(daysPassed + 1, 30));
+    const todayStr   = today.toDateString();
+
+    // If a new calendar day has started
+    if (gameState.lastCheckDate !== todayStr) {
+        const oldDay = gameState.currentDay;
+        // FIX #15: Apply HP damage for ALL missed days, not just the previous one
+        for (let d = oldDay; d < newDay; d++) {
+            if (d > 0 && !gameState.dayFinalized[`day${d}`]) {
+                // Check shield buff — if active for this day, skip damage
+                if (gameState.buffs && gameState.buffs.shieldDay === d) {
+                    gameState.dayFinalized[`day${d}`] = true;
+                    const habits = getAllHabitsForDay(d);
+                    const completed = habits.filter(h => gameState.habitCompletions[`day${d}_${h.name}`]?.completed).length;
+                    gameState.dayResults[`day${d}`] = { total: habits.length, completed };
+                    showToastMsg(`🛡️ Tameng melindungi Hari ${d}!`, 'info');
+                } else {
+                    applyMissedDayDamage(d, d < oldDay); // silent for older skipped days
+                }
+            }
+        }
+        gameState.currentDay = newDay;
+        gameState.lastCheckDate = todayStr;
+    }
+}
+
+// FIX #2 & #5: Helper to get ALL habits for a day (daily + program), used consistently everywhere
+function getAllHabitsForDay(day) {
+    // FIX #5: Assign correct phase to daily habits based on the day
+    const dayPhase = day <= 7 ? 1 : day <= 14 ? 2 : day <= 21 ? 3 : 4;
+    const phaseHabits  = HABIT_PROGRAM.filter(h => h.day === day);
+    const dailyWithDay = DAILY_HABITS.map(h => ({ ...h, day, phase: dayPhase }));
+    return [...dailyWithDay, ...phaseHabits];
+}
+
+function applyMissedDayDamage(day, silent) {
+    // FIX #2: Use getAllHabitsForDay instead of only HABIT_PROGRAM
+    const habits = getAllHabitsForDay(day);
+    if (habits.length === 0) return;
+    const completed = habits.filter(h => {
+        const k = `day${day}_${h.name}`;
+        return gameState.habitCompletions[k]?.completed;
+    }).length;
+    const total = habits.length;
+
+    gameState.dayResults[`day${day}`] = { total, completed };
+    gameState.dayFinalized[`day${day}`] = true;
+
+    if (completed === total && total > 0) {
+        // FIX #3: Auto-transition with all done → streak should still grow
+        gameState.streak++;
+        if (gameState.streak > gameState.longestStreak) {
+            gameState.longestStreak = gameState.streak;
+        }
+        // No bonus XP here — user should press the button for that reward
+    } else if (completed === 0) {
+        // FIX #10: streak saver buff
+        if (gameState.buffs && gameState.buffs.streakSaver && gameState.streak > 0) {
+            gameState.buffs.streakSaver = false;
+            if (!silent) { showToastMsg(`🔮 Penjaga Streak menyelamatkan streak ${gameState.streak} hari!`, 'info'); }
+        } else {
+            gameState.character.hp = Math.max(1, gameState.character.hp - DAMAGE_FULL_MISS);
+            if (gameState.streak > 0 && !silent) {
+                showToastMsg(`Streak ${gameState.streak} hari berakhir! 💔`, 'danger');
+            }
+            gameState.streak = 0;
+            if (!silent) { showParticle(`-${DAMAGE_FULL_MISS} HP`, 'damage'); }
+        }
+    } else {
+        const missed = total - completed;
+        const dmg = missed * DAMAGE_PARTIAL;
+        gameState.character.hp = Math.max(1, gameState.character.hp - dmg);
+        if (!silent) { showParticle(`-${dmg} HP`, 'damage'); }
+    }
+}
+
+// ═══════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════
+function isStarted() {
+    if (!gameState.startDate) return false;
+    return new Date() >= new Date(gameState.startDate);
+}
+
+
+function getCurrentPhase() {
+    const d = gameState.currentDay;
+    if (d <= 7)  return 1;
+    if (d <= 14) return 2;
+    if (d <= 21) return 3;
+    return 4;
+}
+
+// FIX #5: Daily habits get correct phase dynamically (assigned in getAllHabitsForDay)
+const DAILY_HABITS = [
+    { name:'🍳 Sarapan pagi (07.30)', description:'Roti+telur / nasi / susu+pisang — minimal 5 menit!', daily:true },
+    { name:'🍚 Makan siang (12.00)', description:'Nasi + protein (telur/tempe/ayam/tahu)', daily:true },
+    { name:'🍽️ Makan malam (18.00)', description:'Nasi + lauk — jangan dilewat walau sibuk!', daily:true },
+    { name:'🥛 Susu/cemilan sebelum tidur (22.30)', description:'Tambah kalori tanpa effort — susu full cream ideal', daily:true },
+];
+
+function getTodayHabits() {
+    return getAllHabitsForDay(gameState.currentDay);
+}
+
+function getTodayProgress() {
+    const habits = getTodayHabits();
+    const completed = habits.filter(h => {
+        return gameState.habitCompletions[`day${gameState.currentDay}_${h.name}`]?.completed;
+    }).length;
+    return { total: habits.length, completed, pct: habits.length ? Math.round(completed / habits.length * 100) : 0 };
+}
+
+// ═══════════════════════════════════════════════════
+//  ACTIONS
+// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+//  ANTI-CHEAT VERIFICATION
+// ═══════════════════════════════════════════════════
+let _anticheatPendingKey  = null;
+let _anticheatPendingName = null;
+
+function toggleHabit(key) {
+    const dayKey = `day${gameState.currentDay}`;
+    if (gameState.dayFinalized[dayKey]) return;
+
+    if (!gameState.habitCompletions[key]) {
+        gameState.habitCompletions[key] = { completed: false };
+    }
+    const c = gameState.habitCompletions[key];
+
+    if (!c.completed) {
+        // ── Intercept: require proof before marking complete ──
+        const habitName = key.replace(/^day\d+_/, '');
+        openAnticheat(key, habitName);
+    } else {
+        // FIX #1: Subtract XP/Gold when unchecking so no free farming
+        c.completed = false;
+        if (c.rewardGiven) {
+            gameState.character.xp   = Math.max(0, gameState.character.xp   - XP_REWARD);
+            gameState.character.gold = Math.max(0, gameState.character.gold - GOLD_REWARD);
+            c.rewardGiven = false;
+            showParticle(`-${XP_REWARD} XP`, 'damage');
+        }
+        saveGame();
+        updateUI();
+    }
+}
+
+function openAnticheat(key, habitName) {
+    _anticheatPendingKey  = key;
+    _anticheatPendingName = habitName;
+
+    document.getElementById('anticheatTaskLabel').textContent = '📋 ' + habitName;
+    document.getElementById('anticheatTextarea').value = '';
+    document.getElementById('anticheatCounter').textContent = '0 / 10 kata minimum';
+    document.getElementById('anticheatCounter').className = 'anticheat-word-counter insufficient';
+    document.getElementById('anticheatConfirmBtn').classList.remove('active');
+    document.getElementById('anticheatOverlay').classList.add('visible');
+    setTimeout(() => document.getElementById('anticheatTextarea').focus(), 100);
+}
+
+function closeAnticheat() {
+    document.getElementById('anticheatOverlay').classList.remove('visible');
+    _anticheatPendingKey  = null;
+    _anticheatPendingName = null;
+}
+
+function onProofInput() {
+    const text  = document.getElementById('anticheatTextarea').value.trim();
+    const words = text === '' ? 0 : text.split(/\s+/).filter(w => w.length > 0).length;
+    const counter = document.getElementById('anticheatCounter');
+    const btn     = document.getElementById('anticheatConfirmBtn');
+
+    if (words >= 10) {
+        counter.textContent   = `✅ ${words} kata — cukup! Kamu siap konfirmasi.`;
+        counter.className     = 'anticheat-word-counter sufficient';
+        btn.classList.add('active');
+    } else {
+        counter.textContent   = `${words} / 10 kata minimum`;
+        counter.className     = 'anticheat-word-counter insufficient';
+        btn.classList.remove('active');
+    }
+}
+
+function confirmProof() {
+    if (!_anticheatPendingKey) return;
+    const text  = document.getElementById('anticheatTextarea').value.trim();
+    const words = text === '' ? 0 : text.split(/\s+/).filter(w => w.length > 0).length;
+    if (words < 10) return;
+
+    const key = _anticheatPendingKey;
+    closeAnticheat();
+
+    if (!gameState.habitCompletions[key]) {
+        gameState.habitCompletions[key] = { completed: false };
+    }
+    const c = gameState.habitCompletions[key];
+    // FIX #1: Only give reward if not already completed (prevent XP duplication)
+    if (!c.completed) {
+        c.completed = true;
+        c.proof = text;
+        c.rewardGiven = true; // FIX #1: track reward to deduct on uncheck
+
+        // FIX double XP buff
+        const xpMult = (gameState.buffs && gameState.buffs.doubleXpDay === gameState.currentDay) ? 2 : 1;
+        const xpGain = XP_REWARD * xpMult;
+        gameState.character.xp   += xpGain;
+        gameState.character.gold += GOLD_REWARD;
+        checkLevelUp();
+        showParticle(`+${xpGain} XP${xpMult > 1 ? ' ×2!' : ''}`, 'xp');
+        showParticle(`+${GOLD_REWARD} G`, 'gold');
+        showParticle('🛡️ VERIFIED!', 'bonus');
+    } else {
+        // Re-confirming an already-completed habit: just update proof text, no reward
+        c.proof = text;
+        showParticle('✏️ Bukti diperbarui', 'bonus');
+    }
+
+    saveGame();
+    updateUI();
+}
+
+function endDay() {
+    const dayKey = `day${gameState.currentDay}`;
+    if (gameState.dayFinalized[dayKey]) return;
+
+    // Close confirm modal if open
+    document.getElementById('enddayModal').style.display = 'none';
+
+    const prog = getTodayProgress();
+    gameState.dayResults[dayKey] = { total: prog.total, completed: prog.completed };
+    gameState.dayFinalized[dayKey] = true;
+
+    if (prog.completed === prog.total && prog.total > 0) {
+        // PERFECT DAY
+        gameState.streak++;
+        if (gameState.streak > gameState.longestStreak) {
+            gameState.longestStreak = gameState.streak;
+        }
+        const xpMult = (gameState.buffs && gameState.buffs.doubleXpDay === gameState.currentDay) ? 2 : 1;
+        const bonusXp = XP_BONUS_FULL * xpMult;
+        gameState.character.xp   += bonusXp;
+        gameState.character.gold += GOLD_BONUS_FULL;
+        checkLevelUp();
+        showParticle(`+${bonusXp} XP BONUS!`, 'bonus');
+        showParticle(`+${GOLD_BONUS_FULL} GOLD!`, 'gold');
+
+        if ([3,7,14,21,30].includes(gameState.streak)) {
+            setTimeout(() => showAchievementToast('🔥', `${gameState.streak} Hari Beruntun!`, `Streak luar biasa!`), 800);
+        }
+    } else if (prog.completed > 0) {
+        // PARTIAL — damage, streak holds
+        const missed = prog.total - prog.completed;
+        const dmg = missed * DAMAGE_PARTIAL;
+        gameState.character.hp = Math.max(1, gameState.character.hp - dmg);
+        showParticle(`-${dmg} HP`, 'damage');
+        flashDamage();
+    } else {
+        // NO HABITS
+        const prevStreak = gameState.streak;
+        // FIX: use streak saver if available
+        if (gameState.buffs && gameState.buffs.streakSaver && prevStreak > 0) {
+            gameState.buffs.streakSaver = false;
+            showAchievementToast('🔮', 'Penjaga Streak Aktif!', `Streak ${prevStreak} hari diselamatkan!`);
+        } else {
+            gameState.streak = 0;
+        }
+        gameState.character.hp = Math.max(1, gameState.character.hp - DAMAGE_FULL_MISS);
+        showParticle(`-${DAMAGE_FULL_MISS} HP`, 'damage');
+        flashDamage();
+        if (prevStreak > 0 && !gameState.buffs?.streakSaver) {
+            setTimeout(() => showAchievementToast('💔', 'Streak Berakhir', `${prevStreak} hari streak hilang.`), 500);
+        }
+    }
+
+    checkAchievements();
+    saveGame();
+    updateUI();
+}
+
+function checkLevelUp() {
+    while (gameState.character.xp >= gameState.character.xpToLevel) {
+        gameState.character.xp -= gameState.character.xpToLevel;
+        gameState.character.level++;
+        gameState.character.xpToLevel = Math.floor(gameState.character.xpToLevel * LEVEL_MULTI);
+        gameState.character.maxHp += 10;
+        // FIX #10: Level up restores only +20 HP (not full), so damage still has meaning
+        gameState.character.hp = Math.min(gameState.character.maxHp, gameState.character.hp + 20);
+        setTimeout(() => showAchievementToast('⬆️', `LEVEL ${gameState.character.level}!`, '+20 HP dipulihkan!'), 400);
+    }
+}
+
+// FIX #13: Require confirmation before finalizing day
+function confirmEndDay() {
+    const dayKey = `day${gameState.currentDay}`;
+    if (gameState.dayFinalized[dayKey]) return;
+
+    const prog = getTodayProgress();
+    const allDone = prog.completed === prog.total && prog.total > 0;
+    const pct = prog.total > 0 ? Math.round(prog.completed / prog.total * 100) : 0;
+
+    document.getElementById('enddayIcon').textContent = allDone ? '🎉' : '🌙';
+    document.getElementById('enddayTitle').textContent = allDone ? 'Hari Sempurna!' : 'Tutup Hari Ini?';
+
+    const habits = getTodayHabits();
+    const doneList   = habits.filter(h => gameState.habitCompletions[`day${gameState.currentDay}_${h.name}`]?.completed);
+    const undoneList = habits.filter(h => !gameState.habitCompletions[`day${gameState.currentDay}_${h.name}`]?.completed);
+
+    let summary = `✅ Selesai: ${prog.completed}/${prog.total} habit (${pct}%)\n`;
+    if (undoneList.length > 0) {
+        summary += `\n❌ Belum selesai:\n`;
+        undoneList.forEach(h => { summary += `  • ${h.name}\n`; });
+    }
+    document.getElementById('enddaySummary').textContent = summary;
+
+    const warning = prog.completed < prog.total
+        ? `⚠️ ${undoneList.length} habit belum selesai. Setelah ditutup tidak bisa diubah!`
+        : '✨ Semua habit selesai. Kamu akan mendapat bonus XP & Gold!';
+    document.getElementById('enddayWarning').textContent = warning;
+
+    document.getElementById('enddayModal').style.display = 'flex';
+}
+
+function closeEnddayModal() {
+    document.getElementById('enddayModal').style.display = 'none';
+}
+
+function checkAchievements() {
+    ACHIEVEMENTS.forEach(a => {
+        if (!gameState.achievements.includes(a.id) && a.check(gameState)) {
+            gameState.achievements.push(a.id);
+            setTimeout(() => showAchievementToast(a.icon, a.name, a.desc), 1200);
+        }
+    });
+}
+
+// ═══════════════════════════════════════════════════
+//  UI UPDATE
+// ═══════════════════════════════════════════════════
+function updateUI() {
+    if (!gameState.character.name) return; // not set up yet
+
+    updateDayBanner();
+    updateCharacterStats();
+    renderHabits();
+    renderCalendar();
+    renderAchievements();
+    renderBuffIndicators();
+}
+
+function updateDayBanner() {
+    if (!isStarted()) {
+        document.getElementById('dayNumber').textContent = '0';
+        document.getElementById('phaseName').textContent = 'Belum Mulai';
+        document.getElementById('phaseDescription').textContent = 'Challenge dimulai besok. Bersiaplah, pejuang!';
+        document.getElementById('infoText').textContent = 'Gunakan waktu hari ini untuk mempersiapkan diri. Tidur cukup, siapkan mindset terbaik kamu!';
+        const badge = document.getElementById('phaseBadge');
+        badge.textContent = '🕐 Besok';
+        badge.className = 'phase-badge phase-1';
+        document.getElementById('dayProgressFill').style.width = '0%';
+        document.getElementById('dayPctText').textContent = '0%';
+        return;
+    }
+    const phase = getCurrentPhase();
+    const pd    = PHASE_INFO[phase];
+    const pct   = Math.round((gameState.currentDay / 30) * 100);
+
+    document.getElementById('dayNumber').textContent     = gameState.currentDay;
+    document.getElementById('phaseName').textContent     = pd.name;
+    document.getElementById('phaseDescription').textContent = pd.description;
+    document.getElementById('infoText').textContent      = pd.tip;
+
+    const badge = document.getElementById('phaseBadge');
+    badge.textContent = pd.badge;
+    badge.className   = 'phase-badge ' + pd.class;
+
+    document.getElementById('dayProgressFill').style.width = pct + '%';
+    document.getElementById('dayPctText').textContent      = pct + '%';
+}
+
+function updateCharacterStats() {
+    const c = gameState.character;
+
+    document.getElementById('characterName').textContent = c.name;
+    document.getElementById('levelDisplay').textContent  = 'LV ' + c.level;
+    document.getElementById('goldDisplay').textContent   = c.gold;
+    document.getElementById('streakDisplay').textContent = (gameState.streak >= 3 ? '🔥 ' : '') + gameState.streak;
+    document.getElementById('longestStreakDisplay').textContent = 'Terbaik: ' + gameState.longestStreak + ' hari';
+
+    const hpPct = Math.round((c.hp / c.maxHp) * 100);
+    document.getElementById('hpBar').style.width   = hpPct + '%';
+    document.getElementById('hpBar').textContent   = hpPct + '%';
+    document.getElementById('hpText').textContent  = `${c.hp}/${c.maxHp}`;
+
+    const xpPct = Math.round((c.xp / c.xpToLevel) * 100);
+    document.getElementById('xpBar').style.width   = xpPct + '%';
+    document.getElementById('xpBar').textContent   = xpPct + '%';
+    document.getElementById('xpText').textContent  = `${c.xp}/${c.xpToLevel}`;
+
+    // HP bar color based on level
+    const hpBar = document.getElementById('hpBar');
+    if (hpPct <= 20) hpBar.style.background = 'linear-gradient(90deg,#c0392b,#e74c3c)';
+    else if (hpPct <= 50) hpBar.style.background = 'linear-gradient(90deg,var(--ruby),#ff6b6b)';
+    else hpBar.style.background = 'linear-gradient(90deg,var(--ruby),#ff6b6b)';
+}
+
+function renderHabits() {
+    if (!isStarted()) {
+        document.getElementById('habitsList').innerHTML = `
+            <div class="empty-state" style="padding:30px 20px">
+                <div style="font-size:2.5rem;margin-bottom:12px">🌙</div>
+                <div style="font-size:1rem;font-weight:700;color:var(--gold);margin-bottom:6px">Challenge Dimulai Besok</div>
+                <div style="font-size:0.85rem;color:var(--silver)">Istirahat yang baik malam ini. Quest pertamamu menanti!</div>
+            </div>`;
+        document.getElementById('completionChip').textContent = 'Belum mulai';
+        document.getElementById('endDayBtn').style.display = 'none';
+        document.getElementById('finalizedNote').style.display = 'none';
+        return;
+    }
+
+    const habits  = getTodayHabits();
+    const dayKey  = `day${gameState.currentDay}`;
+    const finalized = !!gameState.dayFinalized[dayKey];
+    const prog    = getTodayProgress();
+    const container = document.getElementById('habitsList');
+
+    if (habits.length === 0) {
+        container.innerHTML = '<div class="celebration-banner">🎉 Program 30 Hari Telah Selesai! Kamu adalah LEGEND!</div>';
+    } else {
+        container.innerHTML = habits.map(habit => {
+            const key = `day${gameState.currentDay}_${habit.name}`;
+            const done = !!gameState.habitCompletions[key]?.completed;
+            const phaseClass = 'phase-' + habit.phase;
+            const phaseLabels = ['','Fase 1','Fase 2','Fase 3','Fase 4'];
+            return `
+                <div class="task-item ${done ? 'completed' : ''}">
+                    <div class="task-checkbox ${done ? 'checked' : ''}"
+                         onclick="toggleHabit('${key.replace(/'/g,"\\'")}')"></div>
+                    <div class="task-content">
+                        <div class="task-name">${habit.name}</div>
+                        <div class="task-description">${habit.description}</div>
+                    </div>
+                    <span class="task-phase-badge ${phaseClass}">${phaseLabels[habit.phase]}</span>
+                </div>`;
+        }).join('');
+    }
+
+    // Completion chip
+    const chip = document.getElementById('completionChip');
+    chip.textContent = `${prog.completed}/${prog.total} selesai`;
+    chip.className = 'completion-chip' + (prog.completed === prog.total && prog.total > 0 ? ' done' : '');
+
+    // End Day button
+    const btn = document.getElementById('endDayBtn');
+    const note = document.getElementById('finalizedNote');
+    if (finalized) {
+        btn.style.display = 'none';
+        note.style.display = 'flex';
+        const res = gameState.dayResults[dayKey];
+        const pctDone = res ? Math.round(res.completed / res.total * 100) : 0;
+        note.textContent = pctDone === 100
+            ? '✅ Hari sempurna! Streak bertambah 🔥'
+            : `✅ Hari ditutup (${pctDone}% selesai)`;
+    } else {
+        btn.style.display = 'flex';
+        note.style.display = 'none';
+        const allDone = prog.completed === prog.total && prog.total > 0;
+        btn.textContent = allDone ? '🎉 Klaim Hari Sempurna!' : '🌙 Selesaikan Hari Ini';
+        btn.style.background = allDone
+            ? 'linear-gradient(135deg,var(--emerald),#27ae60)'
+            : 'linear-gradient(135deg,var(--amber),var(--gold))';
+    }
+}
+
+function renderCalendar() {
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+    for (let d = 1; d <= 30; d++) {
+        const dayKey = `day${d}`;
+        const div = document.createElement('div');
+        div.className = 'cal-day';
+        div.textContent = d;
+
+        if (d > gameState.currentDay) {
+            div.classList.add('future');
+        } else if (d === gameState.currentDay) {
+            const prog = getTodayProgress();
+            if (prog.completed > 0 && prog.completed < prog.total) {
+                div.classList.add('in-progress');
+                div.innerHTML = d + '<span class="day-emoji">⚡</span>';
+            } else {
+                div.classList.add('today');
+            }
+        } else {
+            const res = gameState.dayResults[dayKey];
+            if (!res) {
+                div.classList.add('missed');
+                div.innerHTML = d + '<span class="day-emoji">💀</span>';
+            } else if (res.completed === res.total) {
+                div.classList.add('perfect');
+                div.innerHTML = d + '<span class="day-emoji">✓</span>';
+            } else if (res.completed > 0) {
+                div.classList.add('partial');
+                div.innerHTML = d + '<span class="day-emoji">~</span>';
+            } else {
+                div.classList.add('missed');
+                div.innerHTML = d + '<span class="day-emoji">✗</span>';
+            }
+        }
+
+        div.title = `Hari ${d}`;
+        grid.appendChild(div);
+    }
+}
+
+function renderAchievements() {
+    const grid = document.getElementById('achievementsGrid');
+    grid.innerHTML = ACHIEVEMENTS.map(a => {
+        const earned = gameState.achievements.includes(a.id);
+        return `
+            <div class="achievement-item ${earned ? 'unlocked' : 'locked'}">
+                <div class="achievement-icon">${a.icon}</div>
+                <div class="achievement-name">${a.name}</div>
+                <div class="achievement-desc">${a.desc}</div>
+            </div>`;
+    }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+//  VISUAL EFFECTS
+// ═══════════════════════════════════════════════════
+function showParticle(text, type) {
+    const el = document.createElement('div');
+    el.className = `particle ${type}`;
+    el.textContent = text;
+    el.style.left = (20 + Math.random() * 60) + 'vw';
+    el.style.top  = '50vh';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+}
+
+function flashDamage() {
+    const card = document.getElementById('characterCard');
+    card.style.animation = 'damageFlash 0.6s ease';
+    setTimeout(() => { card.style.animation = ''; }, 700);
+}
+
+function showAchievementToast(icon, title, desc) {
+    const container = document.getElementById('achievementToast');
+    container.innerHTML = `
+        <div class="achievement-toast">
+            <div class="toast-icon">${icon}</div>
+            <div>
+                <div class="toast-title">${title}</div>
+                <div class="toast-desc">${desc}</div>
+            </div>
+        </div>`;
+    container.style.display = 'block';
+    setTimeout(() => { container.style.display = 'none'; }, 4500);
+}
+
+function showToastMsg(msg, type) {
+    const icon = type === 'danger' ? '⚠️' : 'ℹ️';
+    showAchievementToast(icon, msg, '');
+}
+
+// Enter key on name input
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('heroNameInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') startJourney();
+    });
+});
+
+
+function openDateModal() {
+    // Default input value to current startDate (or tomorrow if not set)
+    const input = document.getElementById('startDateInput');
+    const ref = gameState.startDate ? new Date(gameState.startDate) : (() => {
+        const t = new Date(); t.setDate(t.getDate()+1); return t;
+    })();
+    input.value = ref.toISOString().split('T')[0];
+
+    // Show warning only if there's existing progress
+    const hasProgress = Object.keys(gameState.habitCompletions).length > 0 ||
+                        gameState.character.xp > 0 || gameState.streak > 0;
+    document.getElementById('dateWarning').classList.toggle('show', hasProgress);
+
+    // Listen for changes to update warning visibility
+    input.addEventListener('change', onDateInputChange);
+    document.getElementById('dateModal').style.display = 'flex';
+}
+
+function onDateInputChange() {
+    const input = document.getElementById('startDateInput');
+    const chosen = new Date(input.value + 'T00:00:00');
+    const today  = new Date(); today.setHours(0,0,0,0);
+    const hasProgress = Object.keys(gameState.habitCompletions).length > 0 ||
+                        gameState.character.xp > 0 || gameState.streak > 0;
+    // Recalc what day we'd be on
+    const daysPassed = Math.floor((today - chosen) / 86400000);
+    const newDay = Math.max(0, Math.min(daysPassed + 1, 30));
+    const warning = document.getElementById('dateWarning');
+    if (hasProgress) {
+        warning.textContent = `⚠️ Ini akan mereset semua progress. Dengan tanggal ini, kamu akan berada di Hari ${newDay === 0 ? 'belum mulai' : newDay} dari 30.`;
+        warning.classList.add('show');
+    } else {
+        const daysPassed2 = Math.floor((today - chosen) / 86400000);
+        const nd = Math.max(0, Math.min(daysPassed2 + 1, 30));
+        warning.textContent = `ℹ️ Dengan tanggal ini, challenge akan dimulai pada Hari ${nd === 0 ? 'belum mulai (masa depan)' : nd}.`;
+        warning.classList.add('show');
+        warning.style.color = '#74b9ff';
+        warning.style.borderColor = 'rgba(116,185,255,0.3)';
+        warning.style.background = 'rgba(52,152,219,0.1)';
+    }
+}
+
+function closeDateModal() {
+    document.getElementById('dateModal').style.display = 'none';
+    // reset warning style
+    const w = document.getElementById('dateWarning');
+    w.style.color = ''; w.style.borderColor = ''; w.style.background = '';
+}
+
+function confirmDateChange() {
+    const input   = document.getElementById('startDateInput');
+    if (!input.value) return;
+
+    // Set startDate to the chosen date at midnight
+    const chosen = new Date(input.value + 'T00:00:00');
+    gameState.startDate = chosen.toISOString();
+
+    // Reset all progress
+    gameState.character.level      = 1;
+    gameState.character.hp         = 50;
+    gameState.character.maxHp      = 50;
+    gameState.character.xp         = 0;
+    gameState.character.xpToLevel  = 100;
+    gameState.character.gold       = 0;
+    gameState.streak               = 0;
+    gameState.longestStreak        = 0;
+    gameState.habitCompletions     = {};
+    gameState.dayResults           = {};
+    gameState.dayFinalized         = {};
+    gameState.achievements         = [];
+    gameState.lastCheckDate        = new Date().toDateString();
+
+    // Recalculate current day
+    const today = new Date(); today.setHours(0,0,0,0);
+    const daysPassed = Math.floor((today - chosen) / 86400000);
+    gameState.currentDay = Math.max(0, Math.min(daysPassed + 1, 30));
+
+    closeDateModal();
+    saveGame();
+    updateUI();
+    showAchievementToast('📅', 'Tanggal Diperbarui!', `Challenge dimulai ${input.value}`);
+}
+
+
+// ═══════════════════════════════════════════════════
+//  SHOP SYSTEM (FIX #4: Gold now has purpose)
+// ═══════════════════════════════════════════════════
+function openShop() {
+    renderShop();
+    document.getElementById('shopModal').style.display = 'flex';
+}
+function closeShop() {
+    document.getElementById('shopModal').style.display = 'none';
+}
+
+function renderShop() {
+    document.getElementById('shopGoldDisplay').textContent = gameState.character.gold;
+    const grid = document.getElementById('shopGrid');
+    grid.innerHTML = SHOP_ITEMS.map(item => {
+        const canAfford = gameState.character.gold >= item.price;
+        // Permanent once — check if already purchased
+        const alreadyBought = item.type === 'permanent_once' && gameState.purchases.includes(item.id);
+        // Buff today — check if already active
+        const alreadyActive = (item.type === 'buff_today' && gameState.buffs.doubleXpDay === gameState.currentDay)
+                           || (item.type === 'buff_once' && gameState.buffs.streakSaver)
+                           || (item.type === 'buff_1day' && gameState.buffs.shieldDay > gameState.currentDay);
+        const isPurchased   = alreadyBought || alreadyActive;
+        let cls = 'shop-item';
+        if (isPurchased) cls += ' purchased';
+        else if (!canAfford) cls += ' cant-afford';
+
+        const priceLabel = isPurchased
+            ? (alreadyBought ? '✅ Sudah dibeli' : '✅ Aktif')
+            : `💰 ${item.price} Gold`;
+        const onclick = isPurchased || !canAfford ? '' : `onclick="buyItem('${item.id}')"`;
+        return `
+            <div class="${cls}" ${onclick}>
+                <div class="shop-item-icon">${item.icon}</div>
+                <div class="shop-item-name">${item.name}</div>
+                <div class="shop-item-desc">${item.desc}</div>
+                <div class="shop-item-price">${priceLabel}</div>
+            </div>`;
+    }).join('');
+}
+
+function buyItem(itemId) {
+    const item = SHOP_ITEMS.find(i => i.id === itemId);
+    if (!item) return;
+    if (gameState.character.gold < item.price) {
+        showToastMsg('💸 Gold tidak cukup!', 'danger');
+        return;
+    }
+    gameState.character.gold -= item.price;
+    item.effect(gameState);
+    if (item.type === 'permanent_once') {
+        gameState.purchases.push(itemId);
+    }
+    showAchievementToast(item.icon, item.name + ' dibeli!', item.desc);
+    checkAchievements();
+    saveGame();
+    renderShop(); // re-render shop
+    updateCharacterStats();
+}
+
+// ═══════════════════════════════════════════════════
+//  HISTORY VIEWER (FIX #8: View past days)
+// ═══════════════════════════════════════════════════
+function openHistory() {
+    renderHistory();
+    document.getElementById('historyModal').style.display = 'flex';
+}
+function closeHistory() {
+    document.getElementById('historyModal').style.display = 'none';
+}
+
+function renderHistory() {
+    const container = document.getElementById('historyContent');
+    const finDays = Object.keys(gameState.dayResults)
+        .map(k => parseInt(k.replace('day','')))
+        .sort((a,b) => b - a); // newest first
+
+    if (finDays.length === 0) {
+        container.innerHTML = '<div class="history-empty">Belum ada hari yang selesai.</div>';
+        return;
+    }
+
+    container.innerHTML = finDays.map(d => {
+        const res = gameState.dayResults[`day${d}`];
+        const pct = res.total > 0 ? Math.round(res.completed / res.total * 100) : 0;
+        const isPerfect = res.completed === res.total && res.total > 0;
+        const isMissed  = res.completed === 0;
+        const badgeCls  = isPerfect ? 'badge-perfect' : isMissed ? 'badge-missed' : 'badge-partial';
+        const badgeTxt  = isPerfect ? '✅ Sempurna' : isMissed ? '❌ Terlewat' : `⚡ ${pct}%`;
+
+        const habits = getAllHabitsForDay(d);
+        const habitRows = habits.map(h => {
+            const key  = `day${d}_${h.name}`;
+            const comp = gameState.habitCompletions[key];
+            const done = comp?.completed;
+            const proof = comp?.proof || '';
+            return `<div class="history-habit-row">
+                <span class="history-habit-status">${done ? '✅' : '❌'}</span>
+                <div>
+                    <div>${h.name}</div>
+                    ${proof ? `<div class="history-proof-text">🛡️ "${proof.length > 80 ? proof.substring(0,80)+'…' : proof}"</div>` : ''}
+                </div>
+            </div>`;
+        }).join('');
+
+        return `<div class="history-day-card">
+            <div class="history-day-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                <span class="history-day-title">📅 Hari ${d}</span>
+                <span class="history-day-badge ${badgeCls}">${badgeTxt}</span>
+            </div>
+            <div class="history-habits-list" style="display:none">${habitRows}</div>
+        </div>`;
+    }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+//  EXPORT / IMPORT (FIX #14: Backup protection)
+// ═══════════════════════════════════════════════════
+function exportData() {
+    const dataStr = JSON.stringify(gameState, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `questkeeper_backup_day${gameState.currentDay}_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showAchievementToast('💾', 'Backup Berhasil!', 'Data tersimpan di file JSON.');
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (!confirm('⚠️ Restore akan MENGGANTI semua data sekarang dengan data dari file backup. Lanjutkan?')) {
+        event.target.value = '';
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const parsed = JSON.parse(e.target.result);
+            if (!parsed.character || !parsed.character.name) throw new Error('Invalid data');
+            gameState = parsed;
+            // Migration guards
+            if (!gameState.purchases) gameState.purchases = [];
+            if (!gameState.buffs) gameState.buffs = { shieldDay:0, streakSaver:false, doubleXpDay:-1 };
+            saveGame();
+            updateUI();
+            showAchievementToast('📂', 'Restore Berhasil!', `Data Hari ${gameState.currentDay} dipulihkan.`);
+        } catch(err) {
+            alert('❌ File backup tidak valid atau rusak.');
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = ''; // reset file input
+}
+
+// ═══════════════════════════════════════════════════
+//  BUFF INDICATOR (show active buffs on character card)
+// ═══════════════════════════════════════════════════
+function renderBuffIndicators() {
+    const container = document.getElementById('buffIndicators');
+    if (!container) return;
+    const buffs = gameState.buffs;
+    let html = '';
+    if (buffs.streakSaver)     html += '<span class="buff-indicator">🔮 Streak Saver</span>';
+    if (buffs.shieldDay > gameState.currentDay) html += '<span class="buff-indicator">🛡️ Tameng Aktif</span>';
+    if (buffs.doubleXpDay === gameState.currentDay) html += '<span class="buff-indicator">⚡ XP ×2</span>';
+    container.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+loadGame();
+
+// Check day transitions every 30 minutes
+setInterval(() => {
+    checkAndApplyDayTransition();
+    updateUI();
+}, 30 * 60 * 1000);
+
+// ═══════════════════════════════════════════════════
+//  LANDSCAPE MODE
+// ═══════════════════════════════════════════════════
+function toggleLandscapeMode() {
+    const isLandscape = document.body.classList.toggle('landscape-mode');
+    localStorage.setItem('questkeeper_landscape', isLandscape ? '1' : '0');
+    document.getElementById('landscapeBtnLabel').textContent = isLandscape ? 'Portrait' : 'Landscape';
+    // Scroll to top for clean view
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Restore landscape preference on load
+(function initLandscapeMode() {
+    const saved = localStorage.getItem('questkeeper_landscape');
+    // Auto-enable landscape if screen width >= 900px on first visit
+    const autoLandscape = saved === null && window.innerWidth >= 900;
+    if (saved === '1' || autoLandscape) {
+        document.body.classList.add('landscape-mode');
+        document.getElementById('landscapeBtnLabel').textContent = 'Portrait';
+    }
+})();
+
+// Auto-toggle on device orientation change
+window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+        const isLandscape = window.innerWidth > window.innerHeight;
+        const btn = document.getElementById('landscapeBtnLabel');
+        if (isLandscape && !document.body.classList.contains('landscape-mode')) {
+            document.body.classList.add('landscape-mode');
+            localStorage.setItem('questkeeper_landscape', '1');
+            if (btn) btn.textContent = 'Portrait';
+        }
+    }, 300);
+});
+</script>
+</body>
+</html>
